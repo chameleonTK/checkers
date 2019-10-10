@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>หมากฮอส</title>
+    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Kanit:200&display=swap" rel="stylesheet">
+
+    <style>
+        html, body, div{
+            font-family: 'Kanit', sans-serif;
+            text-align: center;
+        }
+        
+        .container {
+            margin-top: 30px;
+        }
+
+        #game-stat {
+            display: inline-block;
+            vertical-align: top;
+            padding-left: 30px;
+        }
+
+        #game-stat > .title {
+            margin-top: 0px;
+            margin-left: 10px;
+            text-align: left;
+        }
+
+        #game-stat > .desc{
+            text-align: left;
+            border: 1px solid;
+            padding: 10px;
+            margin: 10px;
+            min-width: 150px;
+        }
+
+        #game-stat .desc-name{
+            text-align: left;
+            font-size: 20px;
+        }
+
+        #game-stat .desc-token{
+            padding-left: 25px;
+        }
+
+        #game-wrapper{
+            width: 80vmin;
+            height: 80vmin;
+            margin: auto;
+            display: inline-block;
+            vertical-align: top;
+            position: relative;
+        }
+
+        .tiles {}
+        .tile {
+            width: 10vmin;
+            height: 10vmin;
+            border: 0.1px solid #cac7c7;
+            /* display: inline-block; */
+            position: absolute;
+        }
+
+        .tile-white{
+            background-color: #fff;
+        }
+
+        .tile-black {
+            background-color: #dcdcdc;
+        }
+
+        .token{
+            width: 10vmin;
+            height: 10vmin;
+            position: absolute;
+        }
+
+        .token > .token-inner {
+            width: 6vmin;
+            height: 6vmin;
+            margin: 1vmin;
+
+            border-style: solid;
+            border-radius: 10vmin;
+            border-width: 1vmin;
+            /* background-color: yellow;
+            border-color: red; */
+
+            z-index: 1000;
+            position: absolute;
+        }
+
+    </style>
+
+    <script src="./pubsub.js"></script>
+    <script src="./game.js"></script>
+    <script src="./player.js"></script>
+    <script src="./board.js"></script>
+    <script src="./rules.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="game-wrapper">
+                
+        </div>
+
+        <div id="game-stat">
+            <h1 class="title">หมากฮอส</h1>
+            <div class="desc" id="desc-player1">
+                <div class="desc-name">ผู้เล่น 1</div>
+                <ul class="desc-token">
+                    <li>อัศวิน: <span class="knight"></span> ตัว</li>
+                    <li>คิงค์: <span class="king"></span> ตัว</li>
+                </ul>
+            </div>
+            <div class="desc" id="desc-player2">
+                    <div class="desc-name">ผู้เล่น 2</div>
+                    <ul class="desc-token">
+                        <li>อัศวิน: <span class="knight"></span> ตัว</li>
+                        <li>คิงค์: <span class="king"></span> ตัว</li>
+                    </ul>
+                </div>
+        </div>
+    </div>
+    
+    <script>
+        var player1 = new ManPlayer("P1", "#444444", {
+            "stat-container": $("#desc-player1"),
+            "notifier": pubsub.newInstance(),
+        });
+
+        var player2 = new ManPlayer("P2", "#e26b6b", {
+            "stat-container": $("#desc-player2"),
+            "notifier": pubsub.newInstance(),
+        });
+
+        var options = {
+            "game-container": $("#game-wrapper")
+        }
+        var checkers = new Checkers(player1, player2, options);
+        checkers.start();
+    </script>
+</body>
+</html>
