@@ -2,8 +2,7 @@ function Board(container, options) {
     var vm = this;
     vm.container = container;
     vm.tokens = [];
-    vm.colors = options.colors;
-    vm.notifiers = options.notifiers;
+    vm.players = options.players;
 
     vm.tiles = [];
 }
@@ -19,30 +18,19 @@ Board.prototype.getTokens = function() {
 }
 
 Board.prototype.initTokens = function() {
-    var p1 = [
-        [0, 1], [0, 3], [0, 5], [0, 7],
-        [1, 0], [1, 2], [1, 4], [1, 6],
-    ]
+    var vm = this;
+    vm.tokens = []
+    vm.players.forEach(player => {
+        tokens = [];
+        player.tokenPos.forEach(pos => {
+            var token = new Token(pos[0], pos[1], vm.container, player.color, player.notifier);
+            tokens.push(token)
+        });
+        vm.tokens.push(tokens);
+    })
 
-    var p2 = [
-        [6, 1], [6, 3], [6, 5], [6, 7],
-        [7, 0], [7, 2], [7, 4], [7, 6],
-    ]
-
-    this.tokens = []
-    tokens = [];
-    for (let i = 0; i < 8; i++) {
-        var token = new Token(p1[i][0], p1[i][1], this.container, this.colors[0], this.notifiers[0]);
-        tokens.push(token)
-    }
-    this.tokens.push(tokens);
-
-    tokens = [];
-    for (let i = 0; i < 8; i++) {
-        var token = new Token(p2[i][0], p2[i][1], this.container, this.colors[1], this.notifiers[1]);
-        tokens.push(token)
-    }
-    this.tokens.push(tokens);
+    
+    
 }
 
 Board.prototype.disableClick = function() {

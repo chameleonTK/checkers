@@ -29,8 +29,22 @@ Game.prototype.start = function() {
 function Checkers(player1, player2, options) {
     var vm = this;
     vm.board = new Board(options["game-container"], {
-        colors: [player1.color, player2.color],
-        notifiers: [player1.notifier, player2.notifier]
+        players: [{
+            color: player1.color,
+            notifier: player1.notifier,
+            tokenPos: [
+                [0, 1], [0, 3], [0, 5], [0, 7],
+                [1, 0], [1, 2], [1, 4], [1, 6],
+            ],
+        },
+        {
+            color: player2.color,
+            notifier: player2.notifier,
+            tokenPos: [
+                [6, 1], [6, 3], [6, 5], [6, 7],
+                [7, 0], [7, 2], [7, 4], [7, 6],
+            ],
+        }]
     });
 
     var rules = new CheckerRules(vm.board);
