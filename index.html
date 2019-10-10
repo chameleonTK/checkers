@@ -130,12 +130,12 @@
     </div>
     
     <script>
-        var player1 = new ManPlayer("P1", "#444444", {
+        var player1 = new ManPlayer(0, "P1", "#444444", {
             "stat-container": $("#desc-player1"),
             "notifier": pubsub.newInstance(),
         });
 
-        var player2 = new ManPlayer("P2", "#e26b6b", {
+        var player2 = new ManPlayer(1, "P2", "#e26b6b", {
             "stat-container": $("#desc-player2"),
             "notifier": pubsub.newInstance(),
         });

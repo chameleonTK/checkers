@@ -1,5 +1,6 @@
-function Player(name, color, options) {
+function Player(pid, name, color, options) {
     var vm = this;
+    vm.pid = pid;
     vm.name = name;
     vm.color = color;
     vm.tokens = []
@@ -49,16 +50,16 @@ Player.prototype.moved = function() {
     
 }
 
-function ComPlayer(name, color, options) {
-    Player.call(this, name, color, options);
+function ComPlayer(pid, name, color, options) {
+    Player.call(this, pid, name, color, options);
 }
 ComPlayer.prototype = Object.create(Player.prototype);
 
 ComPlayer.prototype.move = function() {}
 
-function ManPlayer(name, color, options) {
+function ManPlayer(pid, name, color, options) {
     var vm = this;
-    Player.call(this, name, color, options);
+    Player.call(this, pid, name, color, options);
 
     vm.notifier = options.notifier;
     vm.notifier.subscribe('token/click', function(token) {

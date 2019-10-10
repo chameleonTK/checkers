@@ -53,7 +53,7 @@ function Checkers(player1, player2, options) {
     pubsub.subscribe('token/selected', function(token) {
         vm.board.disabledTiles();
         if (!!token) {
-            var playableTiles = rules.nextMoves(token, vm.board.getTiles());
+            var playableTiles = rules.nextMoves(vm.getActivePlayer(), token, vm.board.getTiles());
             playableTiles.forEach(tile => {
                 tile.highlight(true)
                 tile.enable();

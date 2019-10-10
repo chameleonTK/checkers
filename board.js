@@ -73,19 +73,19 @@ Board.prototype.renderBoard = function() {
     var vm = this;
     vm.container.empty();
     vm.tiles = [];
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 0; i < 8; i++) {
 
         var tilesInARow = []
         var DOMs = $("<div>")
                     .addClass("tiles")
-                    .addClass("tile-row-"+i)
+                    .addClass("tile-row-"+(i+1))
 
-        for (let j = 1; j <= 8; j++) {
+        for (let j = 0; j < 8; j++) {
             var tile = $("<div>")
                         .addClass("tile")
-                        .addClass("tile-col-"+j)
+                        .addClass("tile-col-"+(j+1))
             
-            var tileInACol = new Tile(i-1, j-1, tile, pubsub);
+            var tileInACol = new Tile(i, j, tile, pubsub);
 
             if ((i+j)%2==0) {
                 tileInACol.playable = false;
@@ -94,8 +94,8 @@ Board.prototype.renderBoard = function() {
                 tile.addClass("tile-black")
             }
 
-            tile.css("left", ((j-1)*10)+"vmin")
-            tile.css("top", ((i-1)*10)+"vmin")
+            tile.css("left", ((j)*10)+"vmin")
+            tile.css("top", ((i)*10)+"vmin")
 
             tilesInARow.push(tileInACol);
             tile.appendTo(DOMs)
