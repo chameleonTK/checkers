@@ -16,6 +16,8 @@ CheckerRules.prototype.nextMoves = function(player, token, tiles) {
             moves = moves.filter(tile => tile.x < token.x);
         }
     }
+
+    //TODO: implement a condition that force a player to move over the opp if he can
     return moves;
 }
 
@@ -24,6 +26,5 @@ CheckerRules.prototype.resolve = function() {
 }
 
 CheckerRules.prototype.validate = function() {
-    //TODO: implement
     return false;
 }

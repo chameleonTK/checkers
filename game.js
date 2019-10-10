@@ -41,6 +41,7 @@ function Checkers(player1, player2, options) {
             color: player2.color,
             notifier: player2.notifier,
             tokenPos: [
+                [2, 1],
                 [6, 1], [6, 3], [6, 5], [6, 7],
                 [7, 0], [7, 2], [7, 4], [7, 6],
             ],
