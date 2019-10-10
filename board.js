@@ -17,13 +17,30 @@ Board.prototype.getTokens = function() {
     return this.tokens;
 }
 
+Board.prototype.getTokenMap = function() {
+    var tokenMap = []
+    for (let i = 0; i < 8; i++) {
+        var m = []
+        for (let j = 0; j < 8; j++) {
+            m.push(undefined);
+        }
+        tokenMap.push(m);
+    }
+
+    this.tokens.flat().forEach(token => {
+        tokenMap[token.x][token.y] = token;
+    });
+    return tokenMap;
+}
+
 Board.prototype.initTokens = function() {
     var vm = this;
     vm.tokens = []
+    
     vm.players.forEach(player => {
         tokens = [];
         player.tokenPos.forEach(pos => {
-            var token = new Token(pos[0], pos[1], vm.container, player.color, player.notifier);
+            var token = new Token(pos[0], pos[1], vm.container, player.color, player.notifier, player.ownBy);
             tokens.push(token)
         });
         vm.tokens.push(tokens);
@@ -171,10 +188,12 @@ Tile.prototype.disable = function() {
 }
 
 
-function Token(x, y, container, color, notifier) {
+function Token(x, y, container, color, notifier, ownBy) {
     var vm = this;
     vm.x = x;
     vm.y = y;
+    
+    vm.ownBy = ownBy;
     
     vm.notifier = notifier;
     vm.isKing = false;

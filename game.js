@@ -12,6 +12,10 @@ Game.prototype.getActivePlayer = function() {
     return this.players[this.turn];
 }
 
+Game.prototype.getOpponent = function() {
+    return this.players[(this.turn+1)%2];
+}
+
 Game.prototype.start = function() {
     this.board.render();
 
@@ -30,20 +34,25 @@ function Checkers(player1, player2, options) {
     var vm = this;
     vm.board = new Board(options["game-container"], {
         players: [{
+            ownBy: player1.pid,
             color: player1.color,
             notifier: player1.notifier,
             tokenPos: [
-                [0, 1], [0, 3], [0, 5], [0, 7],
-                [1, 0], [1, 2], [1, 4], [1, 6],
+                [0, 4]
+                
+                // [0, 1], [0, 3], [0, 5], [0, 7],
+                // [1, 0], [1, 2], [1, 4], [1, 6],
             ],
         },
         {
+            ownBy: player2.pid,
             color: player2.color,
             notifier: player2.notifier,
             tokenPos: [
-                [2, 1],
-                [6, 1], [6, 3], [6, 5], [6, 7],
-                [7, 0], [7, 2], [7, 4], [7, 6],
+                [1, 3], [3, 1], [5, 1], [4, 4], [2, 4]
+                // [2, 1], [3, 2], [5, 2],
+                // [6, 1], [6, 3], [6, 5], [6, 7],
+                // [7, 0], [7, 2], [7, 4], [7, 6],
             ],
         }]
     });
@@ -54,8 +63,8 @@ function Checkers(player1, player2, options) {
     pubsub.subscribe('token/selected', function(token) {
         vm.board.disabledTiles();
         if (!!token) {
-            var playableTiles = rules.nextMoves(vm.getActivePlayer(), token, vm.board.getTiles());
-            playableTiles.forEach(tile => {
+            var playableTiles = rules.nextMoves(vm.getActivePlayer(), token);
+            playableTiles.moves.forEach(tile => {
                 tile.highlight(true)
                 tile.enable();
             })
@@ -67,6 +76,8 @@ function Checkers(player1, player2, options) {
     });
 
     pubsub.subscribe("token/moved", function() {
+
+        
         //TODO: resolve => remove tokens
         rules.resolve(vm.board);
         vm.board.disableClick();
