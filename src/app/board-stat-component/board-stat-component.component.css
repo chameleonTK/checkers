@@ -1,0 +1,28 @@
+.container {
+    display: inline-block;
+    vertical-align: top;
+    padding-left: 30px;
+}
+
+.container > .title {
+    margin-top: 0px;
+    margin-left: 10px;
+    text-align: left;
+}
+
+.container > .desc{
+    text-align: left;
+    border: 1px solid;
+    padding: 10px;
+    margin: 10px;
+    min-width: 150px;
+}
+
+.container .desc-name{
+    text-align: left;
+    font-size: 20px;
+}
+
+.container .desc-token{
+    padding-left: 25px;
+}

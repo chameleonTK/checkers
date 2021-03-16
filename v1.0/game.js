@@ -1,30 +1,13 @@
 function Game(player1, player2, board) {
     var vm = this;
-    vm.players = [player1, player2];
-    vm.player1 = player1;
-    vm.player2 = player2;
-
+    
     vm.turn = 0;
     vm.board = board;
 }
 
-Game.prototype.getActivePlayer = function() {
-    return this.players[this.turn];
-}
 
-Game.prototype.getOpponent = function() {
-    return this.players[(this.turn+1)%2];
-}
 
 Game.prototype.start = function() {
-    this.board.render();
-
-    var tokens = this.board.getTokens();
-    this.player1.setTokens(tokens[0])
-    this.player2.setTokens(tokens[1])
-
-    this.player1.updateStat();
-    this.player2.updateStat();
 
     this.getActivePlayer().activate();
     this.getActivePlayer().move();
@@ -32,26 +15,7 @@ Game.prototype.start = function() {
 
 function Checkers(player1, player2, options) {
     var vm = this;
-    vm.board = new Board(options["game-container"], {
-        players: [{
-            ownBy: player1.pid,
-            color: player1.color,
-            notifier: player1.notifier,
-            tokenPos: [
-                [0, 1], [0, 3], [0, 5], [0, 7],
-                [1, 0], [1, 2], [1, 4], [1, 6],
-            ],
-        },
-        {
-            ownBy: player2.pid,
-            color: player2.color,
-            notifier: player2.notifier,
-            tokenPos: [
-                [6, 1], [6, 3], [6, 5], [6, 7],
-                [7, 0], [7, 2], [7, 4], [7, 6],
-            ],
-        }]
-    });
+    
 
     var rules = new CheckerRules(vm.board);
     Game.call(vm, player1, player2, vm.board);

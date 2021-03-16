@@ -1,0 +1,21 @@
+<div class="container">
+    <h1 class="title">หมากฮอส</h1>
+    <div class="desc" id="desc-player1" 
+        [style.background-color]="getBackgroundColor(player1)"
+        [style.color]="getTextColor(player1)">
+        <div class="desc-name">ผู้เล่น 1</div>
+        <ul class="desc-token">
+            <li>อัศวิน: <span class="knight">{{player1.getNKnight()}}</span> ตัว</li>
+            <li>คิงค์: <span class="king">{{player1.getNKing()}}</span> ตัว</li>
+        </ul>
+    </div>
+    <div class="desc" id="desc-player2"
+        [style.background-color]="getBackgroundColor(player2)"
+        [style.color]="getTextColor(player2)">
+            <div class="desc-name">ผู้เล่น 2</div>
+            <ul class="desc-token">
+                <li>อัศวิน: <span class="knight">{{player2.getNKnight()}}</span> ตัว</li>
+                <li>คิงค์: <span class="king">{{player2.getNKing()}}</span> ตัว</li>
+            </ul>
+        </div>
+</div>

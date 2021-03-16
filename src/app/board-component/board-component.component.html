@@ -1,0 +1,23 @@
+<div class="container">
+    <div *ngFor="let row of tiles; let i = index" class="tiles" [ngClass]="rowClassName(i)">
+        <div *ngFor="let col of row; let j = index" 
+            class="tile" 
+            [ngClass]="col.className"
+            [style.left]="col.left"
+            [style.top]="col.top">
+            
+        </div>
+    </div>
+
+    <div *ngFor="let token of tokens; let i = index" class="token"
+        [ngClass]="token.getClass()"
+        [style.left]="token.left"
+        [style.top]="token.top">    
+        <div class="token-inner" 
+            [style.background-color]="token.getColor()"
+            [style.border-color]="token.getColor()">
+        </div>
+    </div>
+
+    <!-- <div class="token" style="top: 0vmin; left: 10vmin; cursor: pointer;"></div> -->
+</div>

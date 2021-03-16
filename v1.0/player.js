@@ -13,30 +13,6 @@ Player.prototype.setTokens = function(tokens) {
     this.tokens = tokens;
 }
 
-Player.prototype.updateStat = function() {
-    var nKing = 0;
-    for (const token in this.tokens) {
-        if (token.isKing) {
-            nKing++;
-        }
-    }
-    this.stat.find(".knight").html(this.tokens.length-nKing);
-    this.stat.find(".king").html(nKing);
-}
-
-Player.prototype.activate = function() {
-    this.active = true;
-    this.stat.css("background-color", this.color);
-    this.stat.css("color", "#fff");
-}
-
-Player.prototype.deactivate = function() {
-    this.active = false;
-    this.stat.css("background-color", "");
-    this.stat.css("border-color", this.color);
-    this.stat.css("color", this.color);
-}
-
 Player.prototype.move = function() {
     alert("501: Not implemented")
 }
