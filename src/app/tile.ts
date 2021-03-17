@@ -1,16 +1,17 @@
 export class Tile {
+    
     x: number;
     y: number
     readonly playable: boolean;
-    readonly className: string;
     readonly left:string;
     readonly top:string;
+
+    private _highlight:boolean = false;
     constructor(x: number, y:number, playable: boolean) {
         this.x = x;
         this.y = y;
         this.playable = playable;
 
-        this.className = "tile-col-"+y+" "+ (playable?'tile-white':'tile-black');
         this.left = ((y)*10)+"vmin";
         this.top = ((x)*10)+"vmin";
     }
@@ -19,4 +20,25 @@ export class Tile {
         return 'tile-row-'+i;
     }
 
+    getClass():string {
+        
+        return [
+            "tile-col-"+this.y, 
+            (this.playable?'tile-white':'tile-black'),
+            (this._highlight?'highlight':''),
+        ].join(" ")
+    }
+
+    // highlight
+    highlight() {
+        this._highlight = true;
+    }
+
+    unhighlight() {
+        this._highlight = false;
+    }
+
+    static flat(tiles: Tile[][]) {
+        return tiles.reduce((acc, val) => acc.concat(val), []);
+    }
 }

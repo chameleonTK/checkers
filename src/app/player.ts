@@ -3,16 +3,18 @@ import { Token } from "./token";
 export class Player {
     readonly name: string;
     readonly color: string;
+    readonly topplayer: boolean;
 
     active:boolean;
     tokens: Token[];
 
-    constructor(name:string, color:string) {
+    constructor(name:string, color:string, topplayer:boolean) {
         this.name = name;
         this.color = color;
         this.tokens = [];
 
         this.active = false;
+        this.topplayer = topplayer;
     }
 
     getNKnight():number {

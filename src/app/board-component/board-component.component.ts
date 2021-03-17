@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Input } from '@angular/core';
 import { Tile } from "../tile";
 import { Token } from "../token";
+import { Rules } from '../rules';
 
 @Component({
   selector: 'board',
@@ -11,6 +12,7 @@ import { Token } from "../token";
 export class BoardComponentComponent implements OnInit {
   @Input() tiles: Tile[][];
   @Input() tokens: Token[];
+  @Input() rules: Rules;
 
   constructor() { 
   }

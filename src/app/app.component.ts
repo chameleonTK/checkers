@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Player } from "./player";
 import { Board } from "./board";
 import { Token } from "./token";
+import { Rules } from './rules';
 
 @Component({
   selector: 'app-root',
@@ -15,48 +16,23 @@ export class AppComponent {
   board: Board;
   tokens: Token[];
 
-  private turn: number;
+  rules: Rules;
   constructor() { 
-    let player1 = new Player("P1", "#444444");
-    let player2 = new Player("P2", "#e26b6b");
+    let player1 = new Player("P1", "#444444", true);
+    let player2 = new Player("P2", "#e26b6b", false);
     this.players = [player1, player2];  
     this.board = new Board();
-    this.turn = 0;
-
+    
     this.tokens = [];
+    this.rules = new Rules(this);
     const _tokenpos = [
-      [
-        [0, 1], [0, 3], [0, 5], [0, 7],
-        [1, 0], [1, 2], [1, 4], [1, 6],
-      ],
-      [
-        [6, 1], [6, 3], [6, 5], [6, 7],
-        [7, 0], [7, 2], [7, 4], [7, 6],
-      ]
+      this.rules.getStartTokenPositions(player1),
+      this.rules.getStartTokenPositions(player2),
     ];
 
-    _tokenpos.forEach((tpos, pid) => {
-      let player = this.players[pid]
-      console.log(player)
-      tpos.forEach((p) => {
-        let token = new Token(p[0], p[1], player)
-        this.tokens.push(token);
-      })
-    })
-
-    player2.active = true;
-    
+    this.tokens = this.board.placeTokens(_tokenpos, this.players);
+    this.rules.takeTurn(player1);
   }
 
-  getTurnIndex() {
-    return (this.turn%2);
-  }
-
-  getActivePlayer = function() {
-      return this.players[this.turnIndex()];
-  }
-
-  getOpponent = function() {
-      return this.players[(this.turnIndex()+1)%2];
-  }
+  
 }
