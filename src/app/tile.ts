@@ -1,3 +1,5 @@
+import { Rules } from './rules';
+
 export class Tile {
     
     x: number;
@@ -19,6 +21,10 @@ export class Tile {
     static rowClassName(i:number):string {
         return 'tile-row-'+i;
     }
+    
+    static flat(tiles: Tile[][]) {
+        return tiles.reduce((acc, val) => acc.concat(val), []);
+    }
 
     getClass():string {
         
@@ -38,7 +44,11 @@ export class Tile {
         this._highlight = false;
     }
 
-    static flat(tiles: Tile[][]) {
-        return tiles.reduce((acc, val) => acc.concat(val), []);
+    onClick(rules: Rules){
+        if (!this._highlight) {
+            return false;
+        }
+
+        rules.move(this);
     }
 }

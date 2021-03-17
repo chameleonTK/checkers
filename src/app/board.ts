@@ -59,6 +59,11 @@ export class Board {
         return tokens;
     }
 
+    removeToken(token:Token) {
+        let idx = this.tokens.indexOf(token)
+        this.tokens.splice(idx, 1);
+    }
+
     getTile(x:number, y:number):Tile {
         if (!this.onBoard(x, y)) {
             return null;

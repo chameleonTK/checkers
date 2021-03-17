@@ -32,4 +32,9 @@ export class Player {
     addToken(token: Token):void {
         this.tokens.push(token);
     }
+
+    removeToken(token: Token):void {
+        let idx = this.tokens.indexOf(token)
+        this.tokens.splice(idx, 1);
+    }
 }

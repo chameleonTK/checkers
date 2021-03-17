@@ -22,7 +22,7 @@
 
 .tile.highlight {
     background-color: #efe0ae;
-    /* cursor: pointer; */
+    cursor: pointer;
 }
 
 .tile.enable {

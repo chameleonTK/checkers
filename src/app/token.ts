@@ -2,15 +2,18 @@ import { Player } from "./player";
 import { Rules } from './rules';
 import { Tile } from './tile';
 
+import { AppComponent } from "./app.component";
+
 export class Token {
     x: number;
     y: number
     king: boolean;
+    left:string;
+    top:string;
     _selected: boolean;
-
+    
     readonly owner: Player;
-    readonly left:string;
-    readonly top:string;
+    
 
     constructor(x: number, y:number, owner: Player) {
         this.x = x;
@@ -23,6 +26,11 @@ export class Token {
         this.top = ((x)*10)+"vmin";
 
         this.owner.addToken(this);
+    }
+
+    static removeToken(token: Token, env:AppComponent) {
+        token.owner.removeToken(token);
+        env.board.removeToken(token)
     }
 
     getColor():string {
@@ -45,11 +53,11 @@ export class Token {
         }
     }
     
-    unselected() {
+    unselect() {
         this._selected = false;
     }
 
-    selected() {
+    select() {
         this._selected = true;
     }
 
@@ -62,12 +70,19 @@ export class Token {
             rules.resetMove();
         } else {
             rules.resetMove();
-            this.selected();
+            this.select();
             let tiles:Tile[] = rules.moveable(this);
             tiles.forEach((t)=>{
                 t.highlight();
             })
         }
         
+    }
+
+    move(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+        this.left = ((y)*10)+"vmin";
+        this.top = ((x)*10)+"vmin";
     }
 }
