@@ -31,7 +31,7 @@ export class AppComponent {
     ];
 
     this.tokens = this.board.placeTokens(_tokenpos, this.players);
-    this.rules.takeTurn(player1);
+    this.rules.takeTurn(player2);
   }
 
   

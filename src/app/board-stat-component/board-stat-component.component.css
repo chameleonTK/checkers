@@ -6,8 +6,18 @@
 
 .container > .title {
     margin-top: 0px;
+    margin-bottom: 0px;
     margin-left: 10px;
     text-align: left;
+}
+
+.container > .title+h2 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+    text-align: left;
+
+    /* font-size: ; */
 }
 
 .container > .desc{

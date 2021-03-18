@@ -17,8 +17,10 @@
         [style.top]="token.top">    
         <div class="token-inner" 
             [style.box-shadow]="token.getShadowStyle()"
-            [style.background-color]="token.getColor()"
+            [style.background-color]="token.getColor(true)"
             [style.border-color]="token.getColor()">
         </div>
+
+        <!-- <fa-icon [icon]="faKing"></fa-icon> -->
     </div>
 </div>

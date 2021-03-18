@@ -48,16 +48,29 @@
 }
 
 .token > .token-inner {
-    width: 6vmin;
-    height: 6vmin;
+    width: 5vmin;
+    height: 5vmin;
+    
+
     margin: 1vmin;
 
     border-style: solid;
     border-radius: 10vmin;
-    border-width: 1vmin;
+    border-width: 1.5vmin;
     /* background-color: yellow;
     border-color: red; */
 
     z-index: 1000;
     position: absolute;
 }
+
+/* .token > .token-inner + fa-icon{
+    position: relative;
+    z-index: 2000;
+    font-size: 4vmin;
+    line-height: 10vmin;
+} */
+
+/* .token.token-king > .token-inner {
+    
+} */

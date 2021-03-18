@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Input } from '@angular/core';
 import { Player } from "../player";
+import { Rules } from '../rules';
+
 @Component({
   selector: 'stat',
   templateUrl: './board-stat-component.component.html',
@@ -9,6 +11,7 @@ import { Player } from "../player";
 export class BoardStatComponentComponent implements OnInit {
   @Input() player1: Player;
   @Input() player2: Player;
+  @Input() rules: Rules;
 
   constructor() { }
 

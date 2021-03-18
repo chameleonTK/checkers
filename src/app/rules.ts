@@ -23,7 +23,7 @@ export class Rules {
             ]
         } else {
             return [
-                [2, 1], [4,1], [6, 1], [6, 3], [6, 5], [6, 7],
+                [6, 1], [6, 3], [6, 5], [6, 7],
                 [7, 0], [7, 2], [7, 4], [7, 6],
             ]
         }
@@ -130,7 +130,43 @@ export class Rules {
     }
 
     moveableTileAsKing(token: Token): Tile[] {
-        throw new Error("Method not implemented.");
+        let x = token.x;
+        let y = token.y;
+
+        let tokenloc = this.tokenLocation();
+        let dir = [[1,1], [1, -1], [-1, 1], [-1,-1]];
+        let alltiles = []
+        dir.forEach((d)=>{
+            let tiles:Tile[] = [];
+
+            let nx = x+d[0];
+            let ny = y+d[1];
+            // let hasJump = false;
+            while (this.env.board.onBoard(nx, ny)) {
+                let t = this.env.board.getTile(nx, ny);
+
+                let o:Token = tokenloc[t.x][t.y];
+                if (!o) {
+                    tiles.push(t)
+                } else if (o.owner!=token.owner) {
+                    if (this.env.board.onBoard(nx+d[0], ny+d[1])) {
+                        tiles = [
+                            this.env.board.getTile(nx+d[0], ny+d[1])
+                        ];
+                    }
+                    break;  
+                } else {
+                    break;
+                }
+
+                nx = nx+d[0];
+                ny = ny+d[1];
+            }
+
+            alltiles = alltiles.concat(tiles);
+        })
+
+        return alltiles;
     }
 
     moveableTileToTop(token: Token): Tile[]{
@@ -152,11 +188,6 @@ export class Rules {
             } else if (o.owner==token.owner) {
                 return null;
             } else {
-                // if (t.y==y-1) {
-                //     return this.env.board.getTile(x-2, y-2)
-                // } else {
-                //     return this.env.board.getTile(x-2, y+2)
-                // }
                 if (t.y==y-1) {
                     return this._jumpmove(x-2, y-2, tokenloc)
                 } else {
@@ -168,10 +199,6 @@ export class Rules {
         })
     }
 
-    // (0,0) (0, 1) (0, 2) (0, 3)
-    // (1,0) (1, 1) (1, 2) (1, 3)
-    // (2,0) (2, 1) (2, 2) (2, 3)
-    // (3,0) (3, 1) (3, 2) (3, 3)
     moveableTileToBottom(token: Token): Tile[] {
         let x = token.x;
         let y = token.y;
@@ -225,7 +252,6 @@ export class Rules {
         let n = Math.abs(dist[0]);
 
         if (n < 2) {
-            console.log("XX", dist, token, tile)
             return null;
         }
 
@@ -239,12 +265,10 @@ export class Rules {
         })
 
         if (!v) {
-            console.log("XXXX")
             return null;
         }
 
         if (v.owner == token.owner) {
-            console.log("XXXXXXXXX")
             return null;
         }
 
@@ -267,37 +291,73 @@ export class Rules {
         // TODO: turn into a king
         let movesuccess = token.move(tile.x, tile.y);
         if (!movesuccess) {
-            alert("Illigal move[2]: This token is not movable in this turn");
-            console.error("Illigal move[2]: This token is not movable in this turn")
+            throw new Error("Illigal move[2]: This token is not movable in this turn")
             return ;
         }
 
+        let hasPromoteKing = false;
+        if (this._onLastRow(token)) {
+            if (!token.king) {
+                token.promote();
+            }
+        }
+
+        
         if (Math.abs(d[0]) > 1) {
             let v = this._moveVictim(token, tile, d);
-            if (!v) {
-                // TODO: this condition is not for King tokens
-                throw new Error("Illigal move[1]: something wrong with this move");
-                return;
+
+            // All jumps from knight should have at least one victim token
+            if ((token.king && hasPromoteKing) || (!token.king)) {
+                if (!v) {
+                    throw new Error("Illigal move[1]: something wrong with this move");
+                    return;
+                }
+            }
+            
+            // if there is a captured token, remove it from the board
+            if (!!v) {
+                Token.removeToken(v, this.env);
             }
 
-            Token.removeToken(v, this.env);
-            if (!this._hasJumpMove(token)) {
+            // When a knight is kinged, the turn automatically ends, even if the king can continue to jump.
+            if (hasPromoteKing) {
                 this.swapTurn();
             } else {
 
-                // Only moved token can be move consecutively
-                token.owner.tokens.forEach((t)=> {
-                    t._moveable = false;
-                })
-                token._moveable = true;
-
-                this.noSwapTurn();
+                // If there is no consecutive jumps
+                if (!this._hasJumpMove(token)) {
+                    this.swapTurn();
+                } else {
+                    // Only moved token can be move consecutively
+                    token.owner.tokens.forEach((t)=> {
+                        t._moveable = false;
+                    })
+                    token._moveable = true;
+    
+                    this.noSwapTurn();
+                }
             }
         } else {
             this.swapTurn();
         }
         
         this.resetMove()
+    }
+
+    private _onLastRow(token:Token):boolean {
+        if (token.owner.topplayer) {
+            if (token.x==this.env.board.getBoardSize()-1) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (token.x==0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     private _hasJumpMove(token:Token):boolean {
@@ -310,7 +370,9 @@ export class Rules {
         let flag = nexttiles.reduce((acc, curr)=> {
             let d = this.distance(token, curr);
 
-            return (Math.abs(d[0])>1) || acc;
+            let v = this._moveVictim(token, curr, d);
+            return (!!v) || acc;
+            // return (Math.abs(d[0])>1) || acc;
         }, false)
 
          

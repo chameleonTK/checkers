@@ -15,7 +15,7 @@ export class Board {
             for (let j = 0; j < 8; j++) {
                 let tileInACol:Tile;
 
-                if ((i+j)%2==0) {
+                if ((i+j)%2==1) {
                     tileInACol = new Tile(i, j, false);
                 } else {
                     tileInACol = new Tile(i, j, true);
@@ -47,6 +47,13 @@ export class Board {
 
     placeTokens(_tokenpos:number[][][], players: Player[]):Token[] {
         let tokens:Token[] = [];
+
+
+        // Test example
+        // let token = new Token(3, 4, players[1])
+        // token.promote()
+        // tokens.push(token);
+        
         _tokenpos.forEach((tpos, pid) => {
             let player = players[pid]
             tpos.forEach((p) => {

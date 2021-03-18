@@ -3,14 +3,15 @@ import { Input } from '@angular/core';
 import { Tile } from "../tile";
 import { Token } from "../token";
 import { Rules } from '../rules';
+// import { faChessQueen } from '@fortawesome/free-solid-svg-icons';
 
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-} from '@angular/animations';
+// import {
+//   trigger,
+//   state,
+//   style,
+//   animate,
+//   transition,
+// } from '@angular/animations';
 
 @Component({
   selector: 'board',
@@ -33,6 +34,7 @@ export class BoardComponentComponent implements OnInit {
   @Input() tokens: Token[];
   @Input() rules: Rules;
 
+  // faKing = faChessQueen;
   constructor() { 
   }
 

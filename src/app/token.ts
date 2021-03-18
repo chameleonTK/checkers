@@ -37,16 +37,24 @@ export class Token {
         env.board.removeToken(token)
     }
 
-    getColor():string {
+    getColor(hasTransparent?:boolean):string {
+        if (hasTransparent) {
+            if (this.king) {
+                return this.owner.color+"80";
+            } else {
+                return this.owner.color;
+            }
+        }
+
         return this.owner.color;
+        
     }
 
     getClass():string {
-        if (this.owner.active) {
-            return "active"
-        } else {
-            return ""
-        }
+        return [
+            (this.owner.active?'active':''),
+            (this.king?'token-king':''),
+        ].join(" ")
     }
 
     getShadowStyle():string {
@@ -63,6 +71,10 @@ export class Token {
 
     select() {
         this._selected = true;
+    }
+
+    promote() {
+        this.king = true;
     }
 
     onClick(rules: Rules){
