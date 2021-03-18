@@ -13,7 +13,6 @@ export class Rules {
         this.name = "checker";
         this.env = env;
         this.turn = 0;
-
     }
 
     getStartTokenPositions(player: Player) {
@@ -31,9 +30,12 @@ export class Rules {
     }
 
     takeTurn(player:Player) {
+        this.turn += 1
         let opponent = this.env.players[0]==player?this.env.players[1]:this.env.players[0]
         opponent.active = false;
         player.active = true;
+
+        this.setMovableTokens(player)
     }
 
     swapTurn() {
@@ -41,36 +43,8 @@ export class Rules {
         this.takeTurn(player);
     }
 
-    resetMove():void {
-        Tile.flat(this.env.board.tiles)
-        .forEach((t)=> {
-            t.unhighlight()
-        })
-
-        this.env.tokens.forEach((t)=> {
-            t.unselect();
-        })
-    }
-
-    moveable(token:Token) {
-        if (!token.owner.active) {
-            return [];
-        }
-
-        if (token.king) {
-            return this.moveableAsKing(token);
-        }
-
-        let player = token.owner;
-        if (player.topplayer) {
-            return this.moveableToBottom(token);
-        } else {
-            return this.moveableToTop(token);
-        }
-    }
-
-    moveableAsKing(token: Token): Tile[] {
-        throw new Error("Method not implemented.");
+    noSwapTurn() {
+        // Do nothing
     }
 
     tokenLocation(): Token[][] {
@@ -91,7 +65,39 @@ export class Rules {
         return m;
     }
 
-    private _skipmove(x, y, tokenloc):Tile {
+    setMovableTokens(player:Player) {
+        this.env.tokens.forEach((t)=>{
+            t._moveable = false;
+        })
+
+        // jump is composary: you must make a jump if there is a possible way to jump
+        let jumpableTokens = player.tokens.filter((t)=> {
+            return this._hasJumpMove(t)
+        })
+
+        if (jumpableTokens.length == 0) {
+            player.tokens.forEach((t)=>{
+                t._moveable = true;
+            })
+        } else {
+            jumpableTokens.forEach((t)=>{
+                t._moveable = true;
+            })
+        }
+    }
+
+    resetMove():void {
+        Tile.flat(this.env.board.tiles)
+        .forEach((t)=> {
+            t.unhighlight()
+        })
+
+        this.env.tokens.forEach((t)=> {
+            t.unselect();
+        })
+    }
+
+    private _jumpmove(x, y, tokenloc):Tile {
         let o = this.env.board.getTile(x, y)
         if (!o) {
             return null;
@@ -104,7 +110,30 @@ export class Rules {
             return null;
         }
     }
-    moveableToTop(token: Token): Tile[]{
+
+
+    moveableTile(token:Token) {
+        if (!token.owner.active) {
+            return [];
+        }
+
+        if (token.king) {
+            return this.moveableTileAsKing(token);
+        }
+
+        let player = token.owner;
+        if (player.topplayer) {
+            return this.moveableTileToBottom(token);
+        } else {
+            return this.moveableTileToTop(token);
+        }
+    }
+
+    moveableTileAsKing(token: Token): Tile[] {
+        throw new Error("Method not implemented.");
+    }
+
+    moveableTileToTop(token: Token): Tile[]{
         let x = token.x;
         let y = token.y;
 
@@ -129,9 +158,9 @@ export class Rules {
                 //     return this.env.board.getTile(x-2, y+2)
                 // }
                 if (t.y==y-1) {
-                    return this._skipmove(x-2, y-2, tokenloc)
+                    return this._jumpmove(x-2, y-2, tokenloc)
                 } else {
-                    return this._skipmove(x-2, y+2, tokenloc)
+                    return this._jumpmove(x-2, y+2, tokenloc)
                 }
             }
         }).filter((t)=> {
@@ -143,7 +172,7 @@ export class Rules {
     // (1,0) (1, 1) (1, 2) (1, 3)
     // (2,0) (2, 1) (2, 2) (2, 3)
     // (3,0) (3, 1) (3, 2) (3, 3)
-    moveableToBottom(token: Token): Tile[] {
+    moveableTileToBottom(token: Token): Tile[] {
         let x = token.x;
         let y = token.y;
 
@@ -163,9 +192,9 @@ export class Rules {
                 return null;
             } else {
                 if (t.y==y-1) {
-                    return this._skipmove(x+2, y-2, tokenloc)
+                    return this._jumpmove(x+2, y-2, tokenloc)
                 } else {
-                    return this._skipmove(x+2, y+2, tokenloc)
+                    return this._jumpmove(x+2, y+2, tokenloc)
                 }
             }
         }).filter((t)=> {
@@ -173,26 +202,53 @@ export class Rules {
         })
     }
 
-    private _distance(A, B):number[] {
+    distance(A, B):number[] {
         return [A.x-B.x, A.y-B.y];
     }
 
-    private _moveVictim(tile:Tile, dist:number[]):Token {
+    neitherJumpOrMove(token:Token, tiles:Tile[]):Tile[] {
+        let jumpTiles = tiles.filter((t)=>{
+            let dist = this.distance(token, t);
+            let v = this._moveVictim(token, t, dist);
+            return !!v;
+        });
+
+        if (jumpTiles.length > 0) {
+            return jumpTiles;
+        }
+
+        return tiles;
+    }
+
+    // dist: distance between token and tile before token is moved
+    private _moveVictim(token:Token, tile:Tile, dist:number[]):Token {
         let n = Math.abs(dist[0]);
+
+        if (n < 2) {
+            console.log("XX", dist, token, tile)
+            return null;
+        }
+
         let offset = [(1)*dist[0]/n, (1)*dist[1]/n]
         
         let x = tile.x + offset[0];
         let y = tile.y + offset[1];
 
-        let t:Token = this.env.tokens.find((t)=>{
+        let v:Token = this.env.tokens.find((t)=>{
             return (t.x==x && t.y==y);
         })
 
-        if (!t) {
-            throw new Error("Illigal move[1]: something wrong with this move");
+        if (!v) {
+            console.log("XXXX")
             return null;
         }
-        return t;
+
+        if (v.owner == token.owner) {
+            console.log("XXXXXXXXX")
+            return null;
+        }
+
+        return v;
     }
 
     
@@ -206,20 +262,36 @@ export class Rules {
             return;
         }
 
-        let d = this._distance(token, tile);
+        let d = this.distance(token, tile);
 
-        // TODO: you must make a jump if there is a possible way to jump
         // TODO: turn into a king
-        
-        token.move(tile.x, tile.y);
+        let movesuccess = token.move(tile.x, tile.y);
+        if (!movesuccess) {
+            alert("Illigal move[2]: This token is not movable in this turn");
+            console.error("Illigal move[2]: This token is not movable in this turn")
+            return ;
+        }
 
         if (Math.abs(d[0]) > 1) {
-            let v = this._moveVictim(tile, d);
+            let v = this._moveVictim(token, tile, d);
+            if (!v) {
+                // TODO: this condition is not for King tokens
+                throw new Error("Illigal move[1]: something wrong with this move");
+                return;
+            }
+
             Token.removeToken(v, this.env);
-            if (!this._consecutiveMove(token)) {
+            if (!this._hasJumpMove(token)) {
                 this.swapTurn();
             } else {
-                // TODO: force it to be only one that can move
+
+                // Only moved token can be move consecutively
+                token.owner.tokens.forEach((t)=> {
+                    t._moveable = false;
+                })
+                token._moveable = true;
+
+                this.noSwapTurn();
             }
         } else {
             this.swapTurn();
@@ -228,21 +300,21 @@ export class Rules {
         this.resetMove()
     }
 
-    private _consecutiveMove(token:Token):boolean {
-        let nexttiles = this.moveable(token)
+    private _hasJumpMove(token:Token):boolean {
+        let nexttiles = this.moveableTile(token)
         if (nexttiles.length==0) {
             return false;
         }
 
         // check whether one of these moves is to consume the opponent token
-        let hasSkipMove = nexttiles.reduce((acc, curr)=> {
-            let d = this._distance(token, curr);
+        let flag = nexttiles.reduce((acc, curr)=> {
+            let d = this.distance(token, curr);
 
             return (Math.abs(d[0])>1) || acc;
         }, false)
 
-        
-        return hasSkipMove;
+         
+        return flag;
     }
     
 }

@@ -11,7 +11,8 @@ export class Token {
     left:string;
     top:string;
     _selected: boolean;
-    
+    _moveable: boolean;
+
     readonly owner: Player;
     
 
@@ -21,6 +22,8 @@ export class Token {
         this.owner = owner;
         this.king = false;
         this._selected = false;
+        this._moveable = false;
+        
 
         this.left = ((y)*10)+"vmin";
         this.top = ((x)*10)+"vmin";
@@ -29,6 +32,7 @@ export class Token {
     }
 
     static removeToken(token: Token, env:AppComponent) {
+        // TODO: refactor; it should be stored in one place
         token.owner.removeToken(token);
         env.board.removeToken(token)
     }
@@ -63,7 +67,11 @@ export class Token {
 
     onClick(rules: Rules){
         if (!this.owner.active) {
-            return false;
+            return;
+        }
+
+        if (!this._moveable) {
+            return;
         }
 
         if (this._selected) {
@@ -71,7 +79,10 @@ export class Token {
         } else {
             rules.resetMove();
             this.select();
-            let tiles:Tile[] = rules.moveable(this);
+
+            let tiles:Tile[] = rules.moveableTile(this);
+
+            tiles = rules.neitherJumpOrMove(this, tiles);
             tiles.forEach((t)=>{
                 t.highlight();
             })
@@ -79,10 +90,15 @@ export class Token {
         
     }
 
-    move(x: number, y: number) {
+    move(x: number, y: number): boolean {
+        if (!this._moveable) {
+            return false;
+        }
+
         this.x = x;
         this.y = y;
         this.left = ((y)*10)+"vmin";
         this.top = ((x)*10)+"vmin";
+        return true
     }
 }
