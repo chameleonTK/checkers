@@ -48,23 +48,22 @@ export class Board {
     placeTokens(_tokenpos:number[][][], players: Player[]):Token[] {
         let tokens:Token[] = [];
 
+        // // Test example
+        // let token = new Token(3, 4, players[1])
+        // token.promote()
+        // tokens.push(token);
 
-        // Test example
-        let token = new Token(3, 4, players[1])
-        token.promote()
-        tokens.push(token);
-
-        token = new Token(5, 4, players[0])
-        token.promote()
-        tokens.push(token);
+        // token = new Token(5, 4, players[0])
+        // token.promote()
+        // tokens.push(token);
         
-        // _tokenpos.forEach((tpos, pid) => {
-        //     let player = players[pid]
-        //     tpos.forEach((p) => {
-        //       let token = new Token(p[0], p[1], player)
-        //       tokens.push(token);
-        //     })
-        // })
+        _tokenpos.forEach((tpos, pid) => {
+            let player = players[pid]
+            tpos.forEach((p) => {
+              let token = new Token(p[0], p[1], player)
+              tokens.push(token);
+            })
+        })
 
         this.tokens = tokens;
         return tokens;

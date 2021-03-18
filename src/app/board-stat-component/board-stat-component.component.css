@@ -36,3 +36,17 @@
 .container .desc-token{
     padding-left: 25px;
 }
+
+.container .records {
+    height: 100px !important;
+    overflow-y: scroll;
+    padding: 0px;
+}
+
+.container .records .record{
+    text-align: left;
+}
+
+.desc.records .record:nth-child(odd) {
+    background-color: #eee;
+}

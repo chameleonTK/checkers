@@ -1,5 +1,6 @@
 import { Tile } from './tile';
 import { Board } from './board';
+import { AppComponent } from './app.component';
 
 export interface Point {
     x: number;
@@ -45,6 +46,26 @@ export class Records {
 
         return Math.floor(idx/2) + 1;
     }
+    
+    position2point(p:number): Point {
+        let n = Math.floor(this.board.getBoardSize()/2);
+        
+        let x = Math.ceil(p/n)-1;
+        let _tmp = (p+n-1)%n;
+        let y;
+
+        if (x%2==0) {
+            y = _tmp*2+1;
+        } else {
+            y = _tmp*2;
+        }
+
+        if (isNaN(x) || isNaN(y)) {
+            throw new Error("Cannot convert ["+p+"] into a point (x, y)");
+        }
+        return {x:x, y:y};
+    }
+
 
     repeatedBoard(board: Board):number {
         let sb = this.board2str(board);
@@ -85,21 +106,28 @@ export class Records {
         return s;
     }
 
-    exportRecords() {
+    getHistory() {
         let records = [];
-        let BW = false;
+        
         for(let i=0; i<this._playHistory.length/2; i++) {
             let r1 = this._playHistory[i*2];
             let r2 = "";
-            if (i*2+1 < this._playHistory.length/2) {
-                let r2 = this._playHistory[i*2+1];
-            } else {
-                BW = true;
+            if (i*2+1 < this._playHistory.length) {
+                r2 = this._playHistory[i*2+1];
             }
             
             records.push((i+1)+". "+r1+" "+r2)
         }
 
+        return records;
+    }
+
+    exportRecords() {
+        
+        let records = this.getHistory();
+        let lastrecord = records[records.length-1];
+
+        let BW = lastrecord.split(" ").length==3?false:true;
         if (BW) {
             records.push("BW")
         } else {
@@ -108,5 +136,46 @@ export class Records {
 
         return records;
     }
-    // 1. 9-14 23-18 2. 14x23 27x18 3. 5-9 26-23 4. 12-16 30-26 5. 16-19 24x15 6. 10x19 23x16 7. 11x20 22-17 8. 7-11 18-15 9. 11x18 28-24 10. 20x27 32x5 11. 8-11 26-23 12. 4-8 25-22 13. 11-15 17-13 14. 8-11 21-17 15. 11-16 23-18 16. 15-19 17-14 17. 19-24 14-10 18. 6x15 18x11 19. 24-28 22-17 20. 28-32 17-14 21. 32-28 31-27 22. 16-19 27-24 23. 19-23 24-20 24. 23-26 29-25 25. 26-30 25-21 26. 30-26 14-9 27. 26-23 20-16 28. 23-18 16-12 29. 18-14 11-8 30. 28-24 8-4 31. 24-19 4-8 32. 19-16 9-6 33. 1x10 5-1 34. 10-15 1-6 35. 2x9 13x6 36. 16-11 8-4 37. 15-18 6-1 38. 18-22 1-6 39. 22-26 6-1 40. 26-30 1-6 41. 30-26 6-1 42. 26-22 1-6 43. 22-18 6-1 44. 14-9 1-5 45. 9-6 21-17 46. 18-22 BW
+
+    playBackATurn(env: AppComponent, record:string) {
+        let pos = record.split("-")
+                
+        if(pos.length==1) {
+            pos = record.split("x")
+        }
+
+        let pts = this.position2point(+pos[0]);
+        let ptt = this.position2point(+pos[1]);
+        
+        let tokens = env.board.tokenLocation();
+        let tiles = env.board.tiles;
+        tokens[pts.x][pts.y].onClick(env.rules);
+
+        tiles[ptt.x][ptt.y].onClick(env.rules);
+
+    }
+    
+    playBack(env: AppComponent, records:string[]) {
+        const timer = ms => new Promise(res => setTimeout(res, ms))
+
+        let vm = this;
+        async function load () {
+            for (var i = 0; i < records.length; i++) {
+                let r = records[i];
+                let sp = r.split(" ");
+                let p1 = sp[1];
+                vm.playBackATurn(env, p1);
+                
+                await timer(2000); 
+                if (sp.length >= 3) {
+                    let p2 = sp[2];
+                    vm.playBackATurn(env, p2);
+                }
+
+                await timer(2000); 
+            }
+        }
+
+        load();
+    }
 }

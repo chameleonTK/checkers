@@ -1,6 +1,6 @@
 <div class="container">
     <h1 class="title">หมากฮอส</h1>
-    <h2> ตาที่ {{rules.turn}}</h2>
+    <h2> ตาที่ {{rules.getTurn()}}</h2>
     <div class="desc" id="desc-player1" 
         [style.background-color]="getBackgroundColor(player1)"
         [style.color]="getTextColor(player1)">
@@ -13,10 +13,17 @@
     <div class="desc" id="desc-player2"
         [style.background-color]="getBackgroundColor(player2)"
         [style.color]="getTextColor(player2)">
-            <div class="desc-name">ผู้เล่น 2</div>
-            <ul class="desc-token">
-                <li>อัศวิน: <span class="knight">{{player2.getNKnight()}}</span> ตัว</li>
-                <li>คิงค์: <span class="king">{{player2.getNKing()}}</span> ตัว</li>
-            </ul>
+        <div class="desc-name">ผู้เล่น 2</div>
+        <ul class="desc-token">
+            <li>อัศวิน: <span class="knight">{{player2.getNKnight()}}</span> ตัว</li>
+            <li>คิงค์: <span class="king">{{player2.getNKing()}}</span> ตัว</li>
+        </ul>
+    </div>
+
+    <div class="desc records" >
+        <div *ngFor="let record of rules.records.getHistory(); let i = index" class="record">
+            <span style="padding-left: 10px;">{{record}}</span>
+            <!-- <fa-icon [icon]="faKing"></fa-icon> -->
         </div>
+    </div>
 </div>

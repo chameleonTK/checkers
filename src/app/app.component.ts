@@ -53,6 +53,14 @@ export class AppComponent {
     this.rules.setEndgameCallback((t1, t2)=> {
       this.openDialog(t1, t2);
     })
+
+    // this.rules.records.playBack(this, [
+    //   "1. 7-10 27-24",
+    //   "2. 10-15 24-19",
+    //   "3. 15x24 28x19",
+    //   "4. 8-12 19-16",
+    //   "5. 12x19 26-22",
+    // ])
   }
 
 

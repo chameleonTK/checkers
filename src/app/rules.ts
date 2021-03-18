@@ -28,16 +28,13 @@ export class Rules {
     getStartTokenPositions(player: Player) {
         if (player.topplayer) {
             return [
-                [0, 1], 
-                [0, 3], 
-                // [0, 5], [0, 7],
-                // [1, 0], [1, 2], [1, 4], [1, 6],
+                [0, 1], [0, 3], [0, 5], [0, 7],
+                [1, 0], [1, 2], [1, 4], [1, 6],
             ]
         } else {
             return [
-                [6, 1], 
-                // [6, 3], [6, 5], [6, 7],
-                // [7, 0], [7, 2], [7, 4], [7, 6],
+                [6, 1], [6, 3], [6, 5], [6, 7],
+                [7, 0], [7, 2], [7, 4], [7, 6],
             ]
         }
     }
@@ -105,6 +102,10 @@ export class Rules {
         this.env.tokens.forEach((t)=>{
             t._moveable = false;
         })
+    }
+
+    getTurn(): number {
+        return this.turn;
     }
 
     takeTurn(player:Player) {
