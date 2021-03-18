@@ -50,17 +50,21 @@ export class Board {
 
 
         // Test example
-        // let token = new Token(3, 4, players[1])
-        // token.promote()
-        // tokens.push(token);
+        let token = new Token(3, 4, players[1])
+        token.promote()
+        tokens.push(token);
+
+        token = new Token(5, 4, players[0])
+        token.promote()
+        tokens.push(token);
         
-        _tokenpos.forEach((tpos, pid) => {
-            let player = players[pid]
-            tpos.forEach((p) => {
-              let token = new Token(p[0], p[1], player)
-              tokens.push(token);
-            })
-        })
+        // _tokenpos.forEach((tpos, pid) => {
+        //     let player = players[pid]
+        //     tpos.forEach((p) => {
+        //       let token = new Token(p[0], p[1], player)
+        //       tokens.push(token);
+        //     })
+        // })
 
         this.tokens = tokens;
         return tokens;
@@ -77,5 +81,23 @@ export class Board {
         }
 
         return this.tiles[x][y];
+    }
+
+    tokenLocation(): Token[][] {
+        let m:Token[][] = [];
+        let boardsize = this.getBoardSize();
+        for(let i=0; i<boardsize; i++) {
+            let tokens:Token[] = [];
+            for(let j=0; j<boardsize; j++) {
+                tokens.push(null);
+            }
+            m.push(tokens);
+        }
+
+        this.tokens.forEach((t)=>{
+            m[t.x][t.y] = t;
+        })
+
+        return m;
     }
 }

@@ -1,8 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, Inject} from '@angular/core';
 import { Player } from "./player";
 import { Board } from "./board";
 import { Token } from "./token";
 import { Rules } from './rules';
+
+import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
+
+export interface DialogData {
+    title: string,
+    subtitle: string
+}
+
+@Component({
+  selector: 'endgame-dialog',
+  templateUrl: 'endgame-dialog.html',
+})
+export class EndgameDiaglog {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {
+    
+  }
+}
 
 @Component({
   selector: 'app-root',
@@ -17,7 +34,7 @@ export class AppComponent {
   tokens: Token[];
 
   rules: Rules;
-  constructor() { 
+  constructor(public dialog: MatDialog) { 
     let player1 = new Player("P1", "#444444", true);
     let player2 = new Player("P2", "#e26b6b", false);
     this.players = [player1, player2];  
@@ -31,8 +48,21 @@ export class AppComponent {
     ];
 
     this.tokens = this.board.placeTokens(_tokenpos, this.players);
-    this.rules.takeTurn(player2);
+    this.rules.takeTurn(player1);
+
+    this.rules.setEndgameCallback((t1, t2)=> {
+      this.openDialog(t1, t2);
+    })
   }
 
+
+  openDialog(title, subtitle) {
+    this.dialog.open(EndgameDiaglog, {
+      data: {
+        title: title,
+        subtitle: subtitle
+      }
+    });
+  }
   
 }

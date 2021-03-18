@@ -2,35 +2,119 @@ import { AppComponent } from "./app.component";
 import { Player } from "./player";
 import { Tile } from './tile';
 import { Token } from './token';
-import { Board } from './board';
+import { Records } from "./records"
+import { Point } from "./records";
 
 export class Rules {
     name:string; 
     env:AppComponent;
-    
+    records:Records;
+
+    private _endgameCallback: (t1:string, t2:string) => void;
     private turn: number;
+    private _nocaptureTurn: number = 0;
     constructor(env: AppComponent) {
         this.name = "checker";
         this.env = env;
         this.turn = 0;
+
+        this.records = new Records(this.env.board);
+    }
+
+    setEndgameCallback(fnt) {
+        this._endgameCallback = fnt;
     }
 
     getStartTokenPositions(player: Player) {
         if (player.topplayer) {
             return [
-                [0, 1], [0, 3], [0, 5], [0, 7],
-                [1, 0], [1, 2], [1, 4], [1, 6],
+                [0, 1], 
+                [0, 3], 
+                // [0, 5], [0, 7],
+                // [1, 0], [1, 2], [1, 4], [1, 6],
             ]
         } else {
             return [
-                [6, 1], [6, 3], [6, 5], [6, 7],
-                [7, 0], [7, 2], [7, 4], [7, 6],
+                [6, 1], 
+                // [6, 3], [6, 5], [6, 7],
+                // [7, 0], [7, 2], [7, 4], [7, 6],
             ]
         }
     }
 
+    gameEnd():boolean {
+        if (this.env.players[0].tokens.length==0) {
+            console.log("Player 1 has no tokens")
+            return true;
+        }
+
+        if (this.env.players[1].tokens.length==0) {
+            console.log("Player 2 has no tokens")
+            return true;
+        }
+
+        // if one doesn't has a position where he cannot move
+        if (!this._canPlayerPlay(this.env.players[0])) {
+            console.log("Player 1 cannot play in his turn")
+            return true;
+        }
+
+        if (!this._canPlayerPlay(this.env.players[1])) {
+            console.log("Player 2 cannot play in his turn")
+            return true;
+        }
+
+        // If an exact board position is repeated a third time, the game automatically ends in a draw.
+        let nRepeated = this.records.repeatedBoard(this.env.board);
+        if (nRepeated >=3) {
+            console.log("An exact board position is repeated a third time")
+            return true;
+        }
+
+        // if no pieces have been removed from the board within 50 moves, the game is a draw
+        if (this._nocaptureTurn>=50) {
+            console.log("No pieces have been removed from the board within 50 moves")
+            return true;
+        }
+
+        return false;
+    }
+
+    private _canPlayerPlay(player: Player):boolean {
+        let tokens = player.tokens;
+        for(let i=0; i<tokens.length; i++) {
+            if (this._hasMove(tokens[i])) {
+                return true;
+            }
+        }
+
+        return false
+    }
+
+    callEndgameCallback():void {
+        if (this.env.players[0].tokens.length==0) {
+            this._endgameCallback("\""+this.env.players[1].name+"\"", "ขอแสดงยินดีกับผู้ชนะ")
+        } else if (this.env.players[1].tokens.length==0) {
+            this._endgameCallback("\""+this.env.players[0].name+"\"", "ขอแสดงยินดีกับผู้ชนะ")
+        } else {
+            this._endgameCallback("\"เสมอกัน\"", "ผลการแข่งขัน")
+        }
+
+        this.env.players[0].active = false;
+        this.env.players[1].active = false;
+        this.env.tokens.forEach((t)=>{
+            t._moveable = false;
+        })
+    }
+
     takeTurn(player:Player) {
+        if (this.gameEnd()) {
+            this.callEndgameCallback()
+            return;
+        }
         this.turn += 1
+        this._nocaptureTurn += 1;
+
         let opponent = this.env.players[0]==player?this.env.players[1]:this.env.players[0]
         opponent.active = false;
         player.active = true;
@@ -44,25 +128,9 @@ export class Rules {
     }
 
     noSwapTurn() {
-        // Do nothing
-    }
-
-    tokenLocation(): Token[][] {
-        let m:Token[][] = [];
-        let boardsize = this.env.board.getBoardSize();
-        for(let i=0; i<boardsize; i++) {
-            let tokens:Token[] = [];
-            for(let j=0; j<boardsize; j++) {
-                tokens.push(null);
-            }
-            m.push(tokens);
+        if (this.gameEnd()) {
+            this.callEndgameCallback()
         }
-
-        this.env.board.tokens.forEach((t)=>{
-            m[t.x][t.y] = t;
-        })
-
-        return m;
     }
 
     setMovableTokens(player:Player) {
@@ -113,10 +181,6 @@ export class Rules {
 
 
     moveableTile(token:Token) {
-        if (!token.owner.active) {
-            return [];
-        }
-
         if (token.king) {
             return this.moveableTileAsKing(token);
         }
@@ -133,7 +197,7 @@ export class Rules {
         let x = token.x;
         let y = token.y;
 
-        let tokenloc = this.tokenLocation();
+        let tokenloc = this.env.board.tokenLocation();
         let dir = [[1,1], [1, -1], [-1, 1], [-1,-1]];
         let alltiles = []
         dir.forEach((d)=>{
@@ -173,7 +237,7 @@ export class Rules {
         let x = token.x;
         let y = token.y;
 
-        let tokenloc = this.tokenLocation();
+        let tokenloc = this.env.board.tokenLocation();
         return [
             this.env.board.getTile(x-1, y-1),
             this.env.board.getTile(x-1, y+1)
@@ -203,7 +267,7 @@ export class Rules {
         let x = token.x;
         let y = token.y;
 
-        let tokenloc = this.tokenLocation();
+        let tokenloc = this.env.board.tokenLocation();
         return [
             this.env.board.getTile(x+1, y-1),
             this.env.board.getTile(x+1, y+1)
@@ -229,7 +293,7 @@ export class Rules {
         })
     }
 
-    distance(A, B):number[] {
+    distance(A: Point, B: Point):number[] {
         return [A.x-B.x, A.y-B.y];
     }
 
@@ -286,6 +350,7 @@ export class Rules {
             return;
         }
 
+        let _tmptoken = {...token};
         let d = this.distance(token, tile);
 
         // TODO: turn into a king
@@ -316,7 +381,11 @@ export class Rules {
             
             // if there is a captured token, remove it from the board
             if (!!v) {
+                this._nocaptureTurn = 0;
+                this.records.addRecord(_tmptoken, tile, true);
                 Token.removeToken(v, this.env);
+            } else {
+                this.records.addRecord(_tmptoken, tile, false);
             }
 
             // When a knight is kinged, the turn automatically ends, even if the king can continue to jump.
@@ -338,6 +407,7 @@ export class Rules {
                 }
             }
         } else {
+            this.records.addRecord(_tmptoken, tile, false);
             this.swapTurn();
         }
         
@@ -377,6 +447,15 @@ export class Rules {
 
          
         return flag;
+    }
+
+    private _hasMove(token:Token):boolean {
+        let nexttiles = this.moveableTile(token)
+        if (nexttiles.length==0) {
+            return false;
+        }
+
+        return true;
     }
     
 }
