@@ -1,24 +1,25 @@
-import { AppComponent } from "./app.component";
 import { Player } from "./player";
 import { Tile } from './tile';
 import { Token } from './token';
 import { Records } from "./records"
 import { Point } from "./records";
+import { Board } from './board';
+import { App } from './app';
 
 export class Rules {
     name:string; 
-    env:AppComponent;
+    env:App;
     records:Records;
 
     private _endgameCallback: (t1:string, t2:string) => void;
     private turn: number;
     private _nocaptureTurn: number = 0;
-    constructor(env: AppComponent) {
+    constructor(env: App, board: Board) {
         this.name = "checker";
         this.env = env;
         this.turn = 0;
 
-        this.records = new Records(this.env.board);
+        this.records = new Records(board);
     }
 
     setEndgameCallback(fnt) {
@@ -109,6 +110,7 @@ export class Rules {
     }
 
     takeTurn(player:Player) {
+        
         if (this.gameEnd()) {
             this.callEndgameCallback()
             return;
@@ -121,6 +123,7 @@ export class Rules {
         player.active = true;
 
         this.setMovableTokens(player)
+        player.play();
     }
 
     swapTurn() {
@@ -132,6 +135,9 @@ export class Rules {
         if (this.gameEnd()) {
             this.callEndgameCallback()
         }
+
+        let player = this.env.players[0].active?this.env.players[0]:this.env.players[1]
+        player.play();
     }
 
     setMovableTokens(player:Player) {
@@ -166,8 +172,8 @@ export class Rules {
         })
     }
 
-    private _jumpmove(x, y, tokenloc):Tile {
-        let o = this.env.board.getTile(x, y)
+    private _jumpmove(x:number, y:number, tokenloc, board:Board):Tile {
+        let o = board.getTile(x, y)
         if (!o) {
             return null;
         }
@@ -181,24 +187,28 @@ export class Rules {
     }
 
 
-    moveableTile(token:Token) {
+    moveableTile(token:Token, board?:Board) {
+        if (board===undefined) {
+            board = this.env.board;
+        }
+
         if (token.king) {
-            return this.moveableTileAsKing(token);
+            return this.moveableTileAsKing(board, token);
         }
 
         let player = token.owner;
         if (player.topplayer) {
-            return this.moveableTileToBottom(token);
+            return this.moveableTileToBottom(board, token);
         } else {
-            return this.moveableTileToTop(token);
+            return this.moveableTileToTop(board, token);
         }
     }
 
-    moveableTileAsKing(token: Token): Tile[] {
+    moveableTileAsKing(board:Board, token: Token): Tile[] {
         let x = token.x;
         let y = token.y;
 
-        let tokenloc = this.env.board.tokenLocation();
+        let tokenloc = board.tokenLocation();
         let dir = [[1,1], [1, -1], [-1, 1], [-1,-1]];
         let alltiles = []
         dir.forEach((d)=>{
@@ -207,16 +217,16 @@ export class Rules {
             let nx = x+d[0];
             let ny = y+d[1];
             // let hasJump = false;
-            while (this.env.board.onBoard(nx, ny)) {
-                let t = this.env.board.getTile(nx, ny);
+            while (board.onBoard(nx, ny)) {
+                let t = board.getTile(nx, ny);
 
                 let o:Token = tokenloc[t.x][t.y];
                 if (!o) {
                     tiles.push(t)
                 } else if (o.owner!=token.owner) {
-                    if (this.env.board.onBoard(nx+d[0], ny+d[1])) {
+                    if (board.onBoard(nx+d[0], ny+d[1]) && !tokenloc[nx+d[0]][ny+d[1]]) {
                         tiles = [
-                            this.env.board.getTile(nx+d[0], ny+d[1])
+                            board.getTile(nx+d[0], ny+d[1])
                         ];
                     }
                     break;  
@@ -234,14 +244,14 @@ export class Rules {
         return alltiles;
     }
 
-    moveableTileToTop(token: Token): Tile[]{
+    moveableTileToTop(board:Board, token: Token): Tile[] {
         let x = token.x;
         let y = token.y;
 
-        let tokenloc = this.env.board.tokenLocation();
+        let tokenloc = board.tokenLocation();
         return [
-            this.env.board.getTile(x-1, y-1),
-            this.env.board.getTile(x-1, y+1)
+            board.getTile(x-1, y-1),
+            board.getTile(x-1, y+1)
         ].map((t)=>{
             if (!t) {
                 return null;
@@ -254,9 +264,9 @@ export class Rules {
                 return null;
             } else {
                 if (t.y==y-1) {
-                    return this._jumpmove(x-2, y-2, tokenloc)
+                    return this._jumpmove(x-2, y-2, tokenloc, board);
                 } else {
-                    return this._jumpmove(x-2, y+2, tokenloc)
+                    return this._jumpmove(x-2, y+2, tokenloc, board);
                 }
             }
         }).filter((t)=> {
@@ -264,14 +274,14 @@ export class Rules {
         })
     }
 
-    moveableTileToBottom(token: Token): Tile[] {
+    moveableTileToBottom(board:Board, token: Token): Tile[] {
         let x = token.x;
         let y = token.y;
 
-        let tokenloc = this.env.board.tokenLocation();
+        let tokenloc = board.tokenLocation();
         return [
-            this.env.board.getTile(x+1, y-1),
-            this.env.board.getTile(x+1, y+1)
+            board.getTile(x+1, y-1),
+            board.getTile(x+1, y+1)
         ].map((t)=>{
             if (!t) {
                 return null;
@@ -284,9 +294,9 @@ export class Rules {
                 return null;
             } else {
                 if (t.y==y-1) {
-                    return this._jumpmove(x+2, y-2, tokenloc)
+                    return this._jumpmove(x+2, y-2, tokenloc, board);
                 } else {
-                    return this._jumpmove(x+2, y+2, tokenloc)
+                    return this._jumpmove(x+2, y+2, tokenloc, board);
                 }
             }
         }).filter((t)=> {
@@ -301,7 +311,7 @@ export class Rules {
     neitherJumpOrMove(token:Token, tiles:Tile[]):Tile[] {
         let jumpTiles = tiles.filter((t)=>{
             let dist = this.distance(token, t);
-            let v = this._moveVictim(token, t, dist);
+            let v = this._capturedToken(this.env.tokens, token, t, dist);
             return !!v;
         });
 
@@ -313,7 +323,7 @@ export class Rules {
     }
 
     // dist: distance between token and tile before token is moved
-    private _moveVictim(token:Token, tile:Tile, dist:number[]):Token {
+    private _capturedToken(allTokens:Token[], tokenA:Token, tileB:Tile, dist:number[]):Token {
         let n = Math.abs(dist[0]);
 
         if (n < 2) {
@@ -322,10 +332,10 @@ export class Rules {
 
         let offset = [(1)*dist[0]/n, (1)*dist[1]/n]
         
-        let x = tile.x + offset[0];
-        let y = tile.y + offset[1];
+        let x = tileB.x + offset[0];
+        let y = tileB.y + offset[1];
 
-        let v:Token = this.env.tokens.find((t)=>{
+        let v:Token = allTokens.find((t)=>{
             return (t.x==x && t.y==y);
         })
 
@@ -333,7 +343,7 @@ export class Rules {
             return null;
         }
 
-        if (v.owner == token.owner) {
+        if (v.owner == tokenA.owner) {
             return null;
         }
 
@@ -346,6 +356,15 @@ export class Rules {
             return t._selected;
         })
 
+        return this.moveFunctional(tile, token);
+    }
+    
+    // TODO: make it functional
+    moveFunctional(tile: Tile, token:Token) {
+        let board = this.env.board;
+        let allTokens = this.env.tokens;
+        let records = this.records;
+
         if (!token) {
             throw new Error("Illigal move[0]: something wrong with this move");
             return;
@@ -354,7 +373,6 @@ export class Rules {
         let _tmptoken = {...token};
         let d = this.distance(token, tile);
 
-        // TODO: turn into a king
         let movesuccess = token.move(tile.x, tile.y);
         if (!movesuccess) {
             throw new Error("Illigal move[2]: This token is not movable in this turn")
@@ -362,7 +380,7 @@ export class Rules {
         }
 
         let hasPromoteKing = false;
-        if (this._onLastRow(token)) {
+        if (this._onLastRow(token, board)) {
             if (!token.king) {
                 token.promote();
             }
@@ -370,7 +388,7 @@ export class Rules {
 
         
         if (Math.abs(d[0]) > 1) {
-            let v = this._moveVictim(token, tile, d);
+            let v = this._capturedToken(allTokens, token, tile, d);
 
             // All jumps from knight should have at least one victim token
             if ((token.king && hasPromoteKing) || (!token.king)) {
@@ -383,10 +401,10 @@ export class Rules {
             // if there is a captured token, remove it from the board
             if (!!v) {
                 this._nocaptureTurn = 0;
-                this.records.addRecord(_tmptoken, tile, true);
+                records.addRecord(_tmptoken, tile, true);
                 Token.removeToken(v, this.env);
             } else {
-                this.records.addRecord(_tmptoken, tile, false);
+                records.addRecord(_tmptoken, tile, false);
             }
 
             // When a knight is kinged, the turn automatically ends, even if the king can continue to jump.
@@ -408,16 +426,16 @@ export class Rules {
                 }
             }
         } else {
-            this.records.addRecord(_tmptoken, tile, false);
+            records.addRecord(_tmptoken, tile, false);
             this.swapTurn();
         }
         
         this.resetMove()
     }
 
-    private _onLastRow(token:Token):boolean {
+    private _onLastRow(token:Token, board: Board):boolean {
         if (token.owner.topplayer) {
-            if (token.x==this.env.board.getBoardSize()-1) {
+            if (token.x==board.getBoardSize()-1) {
                 return true;
             } else {
                 return false;
@@ -440,8 +458,8 @@ export class Rules {
         // check whether one of these moves is to consume the opponent token
         let flag = nexttiles.reduce((acc, curr)=> {
             let d = this.distance(token, curr);
-
-            let v = this._moveVictim(token, curr, d);
+        
+            let v = this._capturedToken(this.env.tokens, token, curr, d);
             return (!!v) || acc;
             // return (Math.abs(d[0])>1) || acc;
         }, false)

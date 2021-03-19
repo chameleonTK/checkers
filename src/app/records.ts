@@ -1,6 +1,6 @@
 import { Tile } from './tile';
 import { Board } from './board';
-import { AppComponent } from './app.component';
+import { App } from './app';
 
 export interface Point {
     x: number;
@@ -77,6 +77,7 @@ export class Records {
     }
 
     addRecord(A:Point, B:Point, jump:boolean) {
+        // TODO: bug when there is a consicutive jump
         let a = this.point2position(A)
         let b = this.point2position(B)
         if (jump) {
@@ -137,7 +138,7 @@ export class Records {
         return records;
     }
 
-    playBackATurn(env: AppComponent, record:string) {
+    playBackATurn(env: App, record:string) {
         let pos = record.split("-")
                 
         if(pos.length==1) {
@@ -155,7 +156,7 @@ export class Records {
 
     }
     
-    playBack(env: AppComponent, records:string[]) {
+    playBack(env: App, records:string[]) {
         const timer = ms => new Promise(res => setTimeout(res, ms))
 
         let vm = this;

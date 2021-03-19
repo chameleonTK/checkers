@@ -1,10 +1,14 @@
 import { Component, Inject} from '@angular/core';
+import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
+
 import { Player } from "./player";
 import { Board } from "./board";
 import { Token } from "./token";
 import { Rules } from './rules';
 
-import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
+
+import { PlayerAi } from './player-ai';
+import { App } from './app';
 
 export interface DialogData {
     title: string,
@@ -26,7 +30,7 @@ export class EndgameDiaglog {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements App{
   title = 'app';
 
   players: Player[];
@@ -35,13 +39,17 @@ export class AppComponent {
 
   rules: Rules;
   constructor(public dialog: MatDialog) { 
-    let player1 = new Player("P1", "#444444", true);
+    this.board = new Board();
+    this.rules = new Rules(this, this.board);
+
+    let player1 = new PlayerAi("P1", "#444444", true, this.rules);
+    // let player1 = new Player("P1", "#444444", true);
     let player2 = new Player("P2", "#e26b6b", false);
     this.players = [player1, player2];  
-    this.board = new Board();
+    
     
     this.tokens = [];
-    this.rules = new Rules(this);
+    
     const _tokenpos = [
       this.rules.getStartTokenPositions(player1),
       this.rules.getStartTokenPositions(player2),
@@ -50,16 +58,16 @@ export class AppComponent {
     this.tokens = this.board.placeTokens(_tokenpos, this.players);
     this.rules.takeTurn(player1);
 
+    
     this.rules.setEndgameCallback((t1, t2)=> {
       this.openDialog(t1, t2);
     })
 
     // this.rules.records.playBack(this, [
-    //   "1. 7-10 27-24",
-    //   "2. 10-15 24-19",
-    //   "3. 15x24 28x19",
-    //   "4. 8-12 19-16",
-    //   "5. 12x19 26-22",
+    //   // "1. 8-12 27-23",
+    //   // "2. 12-16 28-24",
+    //   // "3. 7-10 24-20",
+    //   // "4. 16-19",
     // ])
   }
 

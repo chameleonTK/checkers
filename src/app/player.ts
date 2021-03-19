@@ -17,6 +17,11 @@ export class Player {
         this.topplayer = topplayer;
     }
 
+    // Do nothing for human player
+    play() {
+        return;
+    }
+
     getNKnight():number {
         return this.tokens.reduce((acc, curr) => {
             return curr.king?acc:acc+1;

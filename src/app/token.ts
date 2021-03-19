@@ -2,7 +2,7 @@ import { Player } from "./player";
 import { Rules } from './rules';
 import { Tile } from './tile';
 
-import { AppComponent } from "./app.component";
+import { App } from './app';
 
 export class Token {
     x: number;
@@ -27,11 +27,9 @@ export class Token {
 
         this.left = ((y)*10)+"vmin";
         this.top = ((x)*10)+"vmin";
-
-        this.owner.addToken(this);
     }
 
-    static removeToken(token: Token, env:AppComponent) {
+    static removeToken(token: Token, env:App) {
         // TODO: refactor; it should be stored in one place
         token.owner.removeToken(token);
         env.board.removeToken(token)

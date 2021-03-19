@@ -10,6 +10,7 @@ export class Board {
 
     constructor() {
         this.tiles = [];
+        this.tokens = [];
         for (let i = 0; i < 8; i++) {
             let tilesInARow: Tile[] = [];
             for (let j = 0; j < 8; j++) {
@@ -48,12 +49,19 @@ export class Board {
     placeTokens(_tokenpos:number[][][], players: Player[]):Token[] {
         let tokens:Token[] = [];
 
-        // // Test example
-        // let token = new Token(3, 4, players[1])
+        // Test example
+        // let token = new Token(0, 1, players[1])
+        // token.promote()
+        // tokens.push(token);
+
+        // token = new Token(0, 3, players[1])
         // token.promote()
         // tokens.push(token);
 
         // token = new Token(5, 4, players[0])
+        // token.promote()
+        // tokens.push(token);
+        // token = new Token(5, 6, players[0])
         // token.promote()
         // tokens.push(token);
         
@@ -61,6 +69,7 @@ export class Board {
             let player = players[pid]
             tpos.forEach((p) => {
               let token = new Token(p[0], p[1], player)
+              token.owner.addToken(token);
               tokens.push(token);
             })
         })
