@@ -382,6 +382,7 @@ export class Rules {
         let hasPromoteKing = false;
         if (this._onLastRow(token, board)) {
             if (!token.king) {
+                hasPromoteKing = true
                 token.promote();
             }
         }
@@ -389,7 +390,6 @@ export class Rules {
         
         if (Math.abs(d[0]) > 1) {
             let v = this._capturedToken(allTokens, token, tile, d);
-
             // All jumps from knight should have at least one victim token
             if ((token.king && hasPromoteKing) || (!token.king)) {
                 if (!v) {
@@ -411,11 +411,17 @@ export class Rules {
             if (hasPromoteKing) {
                 this.swapTurn();
             } else {
-
-                // If there is no consecutive jumps
-                if (!this._hasJumpMove(token)) {
+                if (!v) {
+                    // if this turn is not a jump
+                    this.swapTurn();
+                } else if (!this._hasJumpMove(token)) {
+                    // if this turn is a jump
+                    // but there is no consecutive jumps
                     this.swapTurn();
                 } else {
+                    // if this turn is a jump
+                    // and there is consecutive jumps
+                    
                     // Only moved token can be move consecutively
                     token.owner.tokens.forEach((t)=> {
                         t._moveable = false;

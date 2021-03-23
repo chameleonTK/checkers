@@ -255,6 +255,7 @@ export class PlayerAi extends Player {
     }
 
     evaluateBoard(state:State):number {
+        // this.printBoard(state.game.board)
         let topplayer = state.game.players[0].topplayer?state.game.players[0]:state.game.players[1]
         let score = 0;
         topplayer.tokens.forEach((t)=>{
@@ -264,10 +265,12 @@ export class PlayerAi extends Player {
                 score += 10
             }
 
-            score += t.x;
+            let tiles = this._rules.moveableTile(t, state.game.board)
+            score += tiles.length*10
         })
 
         let downplayer = state.game.players[0].topplayer?state.game.players[1]:state.game.players[0]
+        
         downplayer.tokens.forEach((t)=>{
             if(t.king) {
                 score -= 100
@@ -275,9 +278,11 @@ export class PlayerAi extends Player {
                 score -= 10
             }
 
-            // TODO: dynamic board size
-            score += (t.x-8);
+            let tiles = this._rules.moveableTile(t, state.game.board)
+            score -= tiles.length*10
         })
+
+        // console.log(score);
         return score;
     }
 

@@ -69,6 +69,7 @@ export class Board {
             let player = players[pid]
             tpos.forEach((p) => {
               let token = new Token(p[0], p[1], player)
+              
               token.owner.addToken(token);
               tokens.push(token);
             })
