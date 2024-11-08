@@ -1,26 +1,20 @@
-<div class="container">
-    <div *ngFor="let row of tiles; let i = index" class="tiles" [ngClass]="rowClassName(i)">
+<div class="container" style="border: 1px solid #eee;">
+    <div *ngFor="let row of tiles; let i = index" class="tiles" [ngClass]="getRowTileClassName(i)">
         <div *ngFor="let tile of row; let j = index" 
             class="tile" 
-            (click)="tile.onClick(rules)"
-            [ngClass]="tile.getClass()"
-            [style.left]="tile.left"
-            [style.top]="tile.top">
+            (click)="onClickTile(tile)"
+            [ngClass]="getClassTile(tile)"
+            [style]="getStyleTile(tile)">
             
         </div>
     </div>
 
     <div *ngFor="let token of tokens; let i = index" class="token"
-        [ngClass]="token.getClass()"
-        (click)="token.onClick(rules)"
-        [style.left]="token.left"
-        [style.top]="token.top">    
-        <div class="token-inner" 
-            [style.box-shadow]="token.getShadowStyle()"
-            [style.background-color]="token.getColor(true)"
-            [style.border-color]="token.getColor()">
-        </div>
+        [ngClass]="getClassToken(token)"
+        (click)="onClickToken(token)"
+        [style]="getStyleToken(token)">    
+        <div class="token-inner" [style]="getInnerStyleToken(token)"> </div>
 
-        <!-- <fa-icon [icon]="faKing"></fa-icon> -->
+        
     </div>
 </div>

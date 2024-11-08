@@ -1,9 +1,6 @@
 .container{
     width: 80vmin;
     height: 80vmin;
-    /* min-width: 480px; */
-    /* min-height: 480px; */
-
     margin: auto;
     display: inline-block;
     vertical-align: top;
@@ -18,9 +15,6 @@
 .tile {
     width: 10vmin;
     height: 10vmin;
-    /* min-width: 60px;
-    min-height: 60px; */
-
     border: 0.1px solid #cac7c7;
     /* display: inline-block; */
     position: absolute;

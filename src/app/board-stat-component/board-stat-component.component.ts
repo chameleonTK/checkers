@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Input } from '@angular/core';
-import { Player } from "../player";
-import { Rules } from '../rules';
+import { Checker } from "../Checker";
+import { Player } from "../Player";
+import { Lang } from "../Lang";
+// import { Rules } from '../rules';
 
 @Component({
   selector: 'stat',
@@ -11,25 +13,32 @@ import { Rules } from '../rules';
 export class BoardStatComponentComponent implements OnInit {
   @Input() player1: Player;
   @Input() player2: Player;
-  @Input() rules: Rules;
+  @Input() game: Checker;
+
+//   @Input() rules: Rules;
+  lang: Lang = new Lang();
 
   constructor() { }
 
   ngOnInit(): void {
-    // console.log(this.player1, this.player2)
+    console.log(this.player1, this.player2);
 
-  //   Player.prototype.activate = function() {
-  //     this.active = true;
-  //     this.stat.css("background-color", this.color);
-  //     this.stat.css("color", "#fff");
-  // }
+//   //   Player.prototype.activate = function() {
+//   //     this.active = true;
+//   //     this.stat.css("background-color", this.color);
+//   //     this.stat.css("color", "#fff");
+//   // }
   
-  // Player.prototype.deactivate = function() {
-  //     this.active = false;
-  //     this.stat.css("background-color", "");
-  //     this.stat.css("border-color", this.color);
-  //     this.stat.css("color", this.color);
-  // }
+//   // Player.prototype.deactivate = function() {
+//   //     this.active = false;
+//   //     this.stat.css("background-color", "");
+//   //     this.stat.css("border-color", this.color);
+//   //     this.stat.css("color", this.color);
+//   // }
+  }
+
+  txt(key: string) {
+    return this.lang.txt(key);
   }
 
   getBackgroundColor(player: Player):string {

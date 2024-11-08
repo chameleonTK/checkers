@@ -1,54 +1,31 @@
-import { Rules } from './rules';
+import { Token } from "./Token";
 
 export class Tile {
-    
     x: number;
     y: number
-    readonly playable: boolean;
-    readonly left:string;
-    readonly top:string;
+    playable: boolean;
+    selected: boolean = false;
+    token: Token = null;
 
-    private _highlight:boolean = false;
     constructor(x: number, y:number, playable: boolean) {
         this.x = x;
         this.y = y;
         this.playable = playable;
-
-        this.left = ((y)*10)+"vmin";
-        this.top = ((x)*10)+"vmin";
-    }
-    
-    static rowClassName(i:number):string {
-        return 'tile-row-'+i;
-    }
-    
-    static flat(tiles: Tile[][]) {
-        return tiles.reduce((acc, val) => acc.concat(val), []);
     }
 
-    getClass():string {
-        
-        return [
-            "tile-col-"+this.y, 
-            (this.playable?'tile-white':'tile-black'),
-            (this._highlight?'highlight':''),
-        ].join(" ")
+    select() {
+        this.selected = true;
     }
 
-    // highlight
-    highlight() {
-        this._highlight = true;
+    unselect() {
+        this.selected = false;
     }
 
-    unhighlight() {
-        this._highlight = false;
+    setToken(token: Token) {
+        this.token = token;
     }
 
-    onClick(rules: Rules){
-        if (!this._highlight) {
-            return false;
-        }
-
-        rules.move(this);
+    isEmpty(): Boolean {
+        return this.token == null;
     }
 }
