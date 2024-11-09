@@ -5,10 +5,18 @@ export class Move {
     token: Token;
     tile: Tile;
     isJump: Boolean = false;
+    capturingToken: Token = null;
 
-    constructor(token: Token, tile: Tile, isJump: Boolean) {
+    srcTile: Tile;
+    destTile: Tile;
+
+    constructor(token: Token, tile: Tile, isJump: Boolean, capturingToken: Token) {
         this.token = token;
         this.tile = tile;
         this.isJump = isJump;
+        this.capturingToken = capturingToken;
+
+        this.srcTile = token.tile;
+        this.destTile = tile;
     }
 }

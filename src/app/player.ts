@@ -5,13 +5,15 @@ import {Board} from "./Board";
 
 
 export class Player {
+    index: number;
     name: string;
     color: string;
     firstPlayer: boolean;
     tokens: Token[] = [];
     active: boolean;
 
-    constructor(name, color, firstPlayer) {
+    constructor(index, name, color, firstPlayer) {
+        this.index = index;
         this.name = name;
         this.color = color;
         this.firstPlayer = firstPlayer;
@@ -21,6 +23,11 @@ export class Player {
     addToken(token: Token) {
         token.setOwner(this);
         this.tokens.push(token);
+    }
+
+    removeToken(token: Token) {
+        token.setOwner(null);
+        this.tokens = this.tokens.filter((t) => t != token);
     }
 
     getNKnight() {
@@ -35,6 +42,16 @@ export class Player {
         this.active = active;
     }
 
+    canMove(board: Board): boolean {
+        for (let token of this.tokens) {
+            if (this.getNextMoves(token, board).length > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
     getNextMoves(token: Token, board: Board): Move[] {
         let x = token.x;
         let y = token.y;
@@ -92,13 +109,13 @@ export class Player {
                         }
 
                         if (!!jumpTile && jumpTile.isEmpty()) {
-                            nextMoves.push(new Move(token, jumpTile, true));
+                            nextMoves.push(new Move(token, jumpTile, true, tile.token));
                         }
                     }
                     break;
                 }
     
-                nextMoves.push(new Move(token, tile, false));
+                nextMoves.push(new Move(token, tile, false, null));
             }
         });
         

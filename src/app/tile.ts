@@ -1,4 +1,5 @@
 import { Token } from "./Token";
+import { Move } from "./Move";
 
 export class Tile {
     x: number;
@@ -6,6 +7,8 @@ export class Tile {
     playable: boolean;
     selected: boolean = false;
     token: Token = null;
+    
+    move: Move = null;
 
     constructor(x: number, y:number, playable: boolean) {
         this.x = x;
@@ -23,6 +26,10 @@ export class Tile {
 
     setToken(token: Token) {
         this.token = token;
+    }
+
+    setMove(move: Move) {
+        this.move = move;
     }
 
     isEmpty(): Boolean {

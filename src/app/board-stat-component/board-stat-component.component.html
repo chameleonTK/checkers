@@ -23,8 +23,8 @@
 
     <!-- <fa-icon [icon]="faKing"></fa-icon> -->
     <div class="desc records" >
-        <div *ngFor="let record of game.records; let i = index" class="record">
-            <span style="padding-left: 10px;">{{record}}</span>
+        <div *ngFor="let record of game.logger.getRecords(); let i = index" class="record">
+            <span style="padding-left: 10px;">{{record}}</span> 
             
         </div>
     </div>

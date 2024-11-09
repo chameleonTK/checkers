@@ -1,36 +1,36 @@
 # Thai Checkers
 
 
-✅ There are two types of pieces: knight and king. Each player will start with 8 knights each.
+There are two types of pieces: knight and king. Each player will start with 8 knights each.
 
-✅ Knights can only move one diagonal space forward (towards their opponents pieces).
+Knights can only move one diagonal space forward (towards their opponents pieces).
 
-✅ To capture an opposing piece, a piece "jump" over it by moving two diagonal spaces in the direction of the the opposing piece. Note that the space on the other side of the captured piece must be empty for you to capture it.
+To capture an opposing piece, a piece "jump" over it by moving two diagonal spaces in the direction of the the opposing piece. Note that the space on the other side of the captured piece must be empty for you to capture it.
 
-✅ A piece may jump consecutively over an opponent's pieces to capture all of them at the same time.
-
-
-✅ Jumps are compulsory. As long as you have an opportunity to capture, you must take it no matter what.
-
-✅ If a piece can continue to jump once it has jumped, it must do so in the same turn.
-
-✅ If there is more than one alternative for capture, you may choose which one to take. It need not be the path that takes the most pieces.
+A piece may jump consecutively over an opponent's pieces to capture all of them at the same time.
 
 
-✅ If your piece reaches the last row on the opponent's side, it will be promoted into a king.
+Jumps are compulsory. As long as you have an opportunity to capture, you must take it no matter what.
 
-✅ When a knight is kinged, the turn automatically ends, even if the king can continue to jump.
+If a piece can continue to jump once it has jumped, it must do so in the same turn.
 
-✅ Kings can only move diagonally but any number of space at a time. They may move diagonally forward or backwards.
-
-✅ There is no limit to how many king pieces a player may have
+If there is more than one alternative for capture, you may choose which one to take. It need not be the path that takes the most pieces.
 
 
-✅ The game is won when all the opponent's pieces are captured or (putting them into a position where they cannot move).
+If your piece reaches the last row on the opponent's side, it will be promoted into a king.
 
-✅ If an exact board position is repeated a third time, the game automatically ends in a draw.
+When a knight is kinged, the turn automatically ends, even if the king can continue to jump.
 
-✅ If 50 moves have taken place (for both players) since the last capture or advancement of a regular checker, the game ends in a draw.
+Kings can only move diagonally but any number of space at a time. They may move diagonally forward or backwards.
+
+There is no limit to how many king pieces a player may have
+
+
+The game is won when all the opponent's pieces are captured or (putting them into a position where they cannot move).
+
+If an exact board position is repeated a third time, the game automatically ends in a draw.
+
+If 50 moves have taken place (for both players) since the last capture or advancement of a regular checker, the game ends in a draw.
 
 Ref: [https://github.com/kschuetz/checkers](https://github.com/kschuetz/checkers)
 

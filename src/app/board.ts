@@ -61,20 +61,32 @@ export class Board {
     addToken(token: Token) {
         if (this.onBoard(token.x, token.y)) {
             this.tiles[token.x][token.y].setToken(token);
+            token.setTile(this.tiles[token.x][token.y]);
         }
 
         this.tokens.push(token);
+    }
+
+    removeToken(token: Token) {
+        if (this.onBoard(token.x, token.y)) {
+            this.tiles[token.x][token.y].setToken(null);
+            token.setTile(null);
+        }
+
+        this.tokens = this.tokens.filter((t) => t != token);
     }
 
     unselect() {
         this.tiles.forEach((row) => {
             row.forEach((tile) => {
                 tile.unselect();
+                tile.setMove(null);
             });
         });
 
         this.tokens.forEach((t) => {
             t.unselect();
+            t.enable();
         });
     }
 
