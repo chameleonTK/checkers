@@ -24,6 +24,8 @@ export class Checker {
     logger: Log;
 
     endgameCallback: Function = null;
+    errorCallback: Function = null;
+    currentGameState: GameState = null;
 
 
     constructor() {
@@ -36,54 +38,58 @@ export class Checker {
         this.activePlayer = this.players[0];
         this.logger = new Log();
         
-        // [0, 1].forEach((rowIdx) => {
-        //     this.board.tiles[rowIdx].forEach((tile, colIdx) => {
-        //         if (tile.playable) {
-        //             // Player 1
-        //             const x = tile.x;
-        //             const y = tile.y;
-        //             const token1 = new Token(x, y);
-        //             this.players[0].addToken(token1);
-        //             this.board.addToken(token1)
+        [0, 1].forEach((rowIdx) => {
+            this.board.tiles[rowIdx].forEach((tile, colIdx) => {
+                if (tile.playable) {
+                    // Player 1
+                    const x = tile.x;
+                    const y = tile.y;
+                    const token1 = new Token(x, y);
+                    this.players[0].addToken(token1);
+                    this.board.addToken(token1)
 
-        //             // Player 2
-        //             const p = this.board.changePerspective(x, y);
-        //             const px = p[0];
-        //             const py = p[1];
-        //             const token2 = new Token(px, py);
-        //             this.players[1].addToken(token2);
-        //             this.board.addToken(token2)
-        //         }
-        //         console.log(tile);
-        //     });
-        // });
+                    // Player 2
+                    const p = this.board.changePerspective(x, y);
+                    const px = p[0];
+                    const py = p[1];
+                    const token2 = new Token(px, py);
+                    this.players[1].addToken(token2);
+                    this.board.addToken(token2)
+                }
+                console.log(tile);
+            });
+        });
 
-        let t = null;
-        t = new Token(2, 2);
-        this.players[0].addToken(t);
-        this.board.addToken(t)
-
-        // t = new Token(5, 5);
+        // let t = null;
+        // t = new Token(2, 2);
         // this.players[0].addToken(t);
         // this.board.addToken(t)
 
-        // t = new Token(2, 2);
+        // // t = new Token(5, 5);
+        // // this.players[0].addToken(t);
+        // // this.board.addToken(t)
+
+        // // t = new Token(2, 2);
+        // // this.players[1].addToken(t);
+        // // this.board.addToken(t)
+
+        // t = new Token(0, 0);
         // this.players[1].addToken(t);
         // this.board.addToken(t)
-
-        t = new Token(0, 0);
-        this.players[1].addToken(t);
-        this.board.addToken(t)
-        t = new Token(1, 1);
-        this.players[1].addToken(t);
-        this.board.addToken(t)
-        t = new Token(3, 3);
-        this.players[1].addToken(t);
-        this.board.addToken(t)
+        // t = new Token(1, 1);
+        // this.players[1].addToken(t);
+        // this.board.addToken(t)
+        // t = new Token(3, 3);
+        // this.players[1].addToken(t);
+        // this.board.addToken(t)
     }
 
     setEndgameCallback(callback) {
         this.endgameCallback = callback;
+    }
+
+    setErrorCallback(callback) {
+        this.errorCallback = callback;
     }
 
     getTurnIndex() {
@@ -97,6 +103,14 @@ export class Checker {
         }
 
         if (!tile.selected) {
+            return;
+        }
+
+        if (!tile.move.isJump && this.selectedToken.owner.canJump(this.board)) {
+            if (!!this.errorCallback) {
+                this.errorCallback("Jumps are compulsory.")
+            }
+
             return;
         }
 
@@ -122,7 +136,10 @@ export class Checker {
 
             // All jumps from knight should have at least one capturing token
             if (!capturingToken) {
-                throw new Error("Illigal move[1]: something wrong with this move");
+                // throw new Error("Illigal move[1]: something wrong with this move");
+                if (!!this.errorCallback) {
+                    this.errorCallback("Illigal move[1]: something wrong with this move");
+                }
                 return;
             }
 
@@ -212,28 +229,32 @@ export class Checker {
         // Rotate player index
         const nextPlayerIdx = (playerIdx+1 >= this.players.length) ? 0 : playerIdx+1;
         this.players[nextPlayerIdx].active = true;
+        this.activePlayer = this.players[nextPlayerIdx];
         
 
         this.turnIndex += 1;
-        const gameState = this.checkGameState()
-        if (gameState.end) {
+        this.currentGameState = this.checkGameState();
+        if (this.currentGameState.end) {
+            this.board.tokens.forEach((t)=>{
+                t.disable();
+            });
+
             if (!!this.endgameCallback) {
-                this.board.tokens.forEach((t)=>{
-                    t.disable();
-                });
-                
-                this.endgameCallback(gameState)
+                this.endgameCallback(this.currentGameState)
             }
         }
     }
 
     noSwapPlayer() {
         this.turnIndex += 1;
+        this.currentGameState = this.checkGameState();
+        if (this.currentGameState.end) {
+            this.board.tokens.forEach((t)=>{
+                t.disable();
+            });
 
-        const gameState = this.checkGameState()
-        if (gameState.end) {
             if (!!this.endgameCallback) {
-                this.endgameCallback(gameState)
+                this.endgameCallback(this.currentGameState)
             }
         }
     }
@@ -250,7 +271,7 @@ export class Checker {
                     end: true,
                     winner: this.players[(i+1)%2],
                     loser: this.players[i],
-                    cause: `Player ${i+1} has no tokens`
+                    cause: `Player ${this.players[i].index} has no tokens`
                 }
             }
 
@@ -260,7 +281,7 @@ export class Checker {
                     end: true,
                     winner: this.players[(i+1)%2],
                     loser: this.players[i],
-                    cause: `Player ${i+1} cannot play in his turn`
+                    cause: `Player ${this.players[i].index} cannot play in his turn`
                 }
             }
         }
@@ -278,7 +299,7 @@ export class Checker {
 
         // If no pieces have been removed from the board within 50 moves, the game is a draw
         let nMove = this.logger.getNMovesWithLastestCapture();
-        if (nMove >= 10) {
+        if (nMove >= 50) {
             return {
                 end: true,
                 winner: null,
@@ -296,7 +317,32 @@ export class Checker {
         }
     }
 
+    giveup() {
+        const loser = this.activePlayer;
+        const winner = this.players[(this.players.indexOf(loser)+1)%2];
+
     
+        const gameState = {
+            end: true,
+            winner: winner,
+            loser: loser,
+            cause: `Player ${loser.index} gave up`
+        };
+
+        this.currentGameState = gameState;
+        this.board.tokens.forEach((t)=>{
+            t.disable();
+        });
+        
+        if (!!this.endgameCallback) {
+            this.endgameCallback(gameState)
+        }
+    }
+    
+
+    redo() {
+        this.logger.redo(this.board);
+    }
     
 
     

@@ -38,6 +38,10 @@ export class AppComponent implements App{
     this.game.setEndgameCallback((gameState)=> {
       this.openDialog("Game Over", gameState.cause);
     })
+
+    this.game.setErrorCallback((errorMessage)=> {
+      this.openDialog("ERROR", errorMessage);
+    })
   }
 
 

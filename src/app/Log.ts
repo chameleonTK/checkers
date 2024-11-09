@@ -78,4 +78,14 @@ export class Log {
 
         return count;
     }
+
+
+    redo() {
+        const lastMove = this.moveLogs[this.moveLogs.length - 1];
+        if (!lastMove) {
+            return;
+        }
+        
+        console.log(lastMove);
+    }
 }

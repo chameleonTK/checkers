@@ -51,6 +51,19 @@ export class Player {
 
         return false;
     }
+
+    canJump(board: Board): boolean {
+        for (let token of this.tokens) {
+            const nextMoves = this.getNextMoves(token, board);
+            for (let move of nextMoves) {
+                if (move.isJump) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     
     getNextMoves(token: Token, board: Board): Move[] {
         let x = token.x;
@@ -94,11 +107,14 @@ export class Player {
                     break;
                 }
     
+                // A piece can either move or jump
                 if (!tile.isEmpty()) {
-                    // Check if it can jump
+                    // A piece can jump if the destination tile is occupied by an opposing piece
+                    // A piece can not jump if the destination tile is occupied by a piece of the same player
                     if (tile.token.owner != this) {
                         let jumpTile = null;
 
+                        //a piece jumps onto the two diagonal spaces in the direction of the the opposing piece. 
                         let jp = [x+i*d[0]+d[0]*2, y+i*d[1]+d[1]*2];
             
                         if (!this.firstPlayer) {
@@ -108,6 +124,8 @@ export class Player {
                             jumpTile = board.getTile(jp[0], jp[1]);
                         }
 
+                        
+                        // the space on the other side of the captured piece must be empty for a player to jump onto it.
                         if (!!jumpTile && jumpTile.isEmpty()) {
                             nextMoves.push(new Move(token, jumpTile, true, tile.token));
                         }

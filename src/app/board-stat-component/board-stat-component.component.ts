@@ -56,4 +56,12 @@ export class BoardStatComponentComponent implements OnInit {
       return player.color;
     }
   }
+
+  redo() {
+    this.game.redo();
+  }
+
+  giveup() {
+    this.game.giveup();
+  }
 }
