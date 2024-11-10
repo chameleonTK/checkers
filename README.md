@@ -45,7 +45,7 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 ## Build
 
-Run `ng build --prod --base-href https://wp.curve.in.th/checkers/` to build. The build artifacts will be stored in the `dist/` directory. 
+Run `ng build --prod --base-href https://chameleontk.github.io/code-challanges/week8_checkers/` to build. The build artifacts will be stored in the `dist/` directory. 
 
 Then run `ngh --dir=dist/app` to deplot the project.
 

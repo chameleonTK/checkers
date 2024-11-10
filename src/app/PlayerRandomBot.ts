@@ -2,7 +2,7 @@ import {Token} from "./Token";
 import {Tile} from "./Tile";
 import {Move} from "./Move";
 import {Checker} from "./Checker";
-import {Player} from "./Player";
+import {Player, PlayableAgent} from "./Player";
 
 function shuffle(array) {
     var m = array.length, t, i;
@@ -22,12 +22,14 @@ function shuffle(array) {
     return array;
   }
 
-export class PlayerRandomBot extends Player {
+export class PlayerRandomBot extends Player implements PlayableAgent{
+    delay: number = 500;
+
     constructor(index, name, color, firstPlayer) {
         super(index, name, color, firstPlayer);
     }
 
-    play(game: Checker, delay: number = 100): void {
+    play(game: Checker): void {
         console.log(`${this.name} is playing...`);
         if (game.currentGameState.end) {
             return;
@@ -50,7 +52,7 @@ export class PlayerRandomBot extends Player {
     
             game.selectToken(nextMove.token);
             game.selectTile(nextMove.tile);
-        }, delay);
+        }, this.delay);
     }
 
     

@@ -2,9 +2,29 @@ import {Token} from "./Token";
 import {Tile} from "./Tile";
 import {Move} from "./Move";
 import {Board} from "./Board";
+import {Checker} from "./Checker";
 
+export interface PlayableAgent {
+    index: number;
+    name: string;
+    color: string;
+    firstPlayer: boolean;
+    tokens: Token[];
+    active: boolean;
 
-export class Player {
+    addToken(token: Token): void;
+    removeToken(token: Token): void;
+    getNKnight(): number;
+    getNKing(): number;
+    setTurn(active: boolean): void;
+    canMove(board: Board): boolean;
+    canJump(board: Board): boolean;
+    getNextMoves(token: Token, board: Board): Move[];
+    play(game: Checker): void;
+    
+}
+
+export class Player implements PlayableAgent {
     index: number;
     name: string;
     color: string;
@@ -143,7 +163,7 @@ export class Player {
         
     }
     
-    play() {
+    play(game: Checker): void {
         console.log(`${this.name} is playing...`);
         return;
     }

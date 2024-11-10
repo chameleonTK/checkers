@@ -27,11 +27,8 @@ export class EndgameDiaglog {
 export class AppComponent implements App{
   title = 'app';
 
-  // players: Player[];
   game: Checker;
-  // tokens: Token[];
-
-  // rules: Rules;
+  
   constructor(public dialog: MatDialog) { 
     this.game = new Checker();
     

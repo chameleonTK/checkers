@@ -2,15 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Checkers ♟️♟️ </title>
+  <title>Code Challanges #8 Checkers ♟️♟️ </title>
+  <!-- <base href="http://localhost:9000/"> -->
   <base href="https://chameleontk.github.io/code-challanges/week8_checkers/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" href="../src/img/favicon.png">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Kanit:200&display=swap" rel="stylesheet">
-  
+  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> -->
+   <style>
+      .text-desc {
+          text-align: left;
+          width: 60%;
+          max-width: 1000px;
+          margin: auto;
+          font-size: large;
+      }
+
+      ul.list-style-none {
+        list-style: none;
+      } 
+
+      ul.list-style-none li {
+        text-align: justify;
+      }
+   </style>
 </head>
 <body>
+  <h2> This is Checkers Game Engine</h2>
+  <h3>with a random bot</h3>
+
   <app-root></app-root>
-  <script src="_dist/runtime.e7df24b5d39b2102df5c.js" defer></script><script src="_dist/polyfills.35a5ca1855eb057f016a.js" defer></script><script src="_dist/styles.c0e135bd545e964d112b.js" defer></script><script src="_dist/main.9dacebfa38f448805ba4.js" defer></script></body>
+
+  <div style="padding-bottom: 20px;"></div>
+  <div class="text-desc container">
+      <h2>What is it?</h2>
+      <p>
+        Today, I implemented an engine for checkers. This is the 3rd version of my implementation since the last two were not well-designed (my bad!) for implementing an AI bot; which I am planing to do in the next few weeks.
+
+      </p>
+      <p>Here is some rules implemented in this engine</p>
+      <ol class="list-style-none">
+        <li>There are two types of pieces: knight and king. Each player will start with 8 knights each.</li>
+
+        <li>Knights can only move one diagonal space forward (towards their opponents pieces).</li>
+
+        <li>To capture an opposing piece, a piece "jump" over it by moving two diagonal spaces in the direction of the the opposing piece. Note that the space on the other side of the captured piece must be empty for you to capture it.</li>
+
+        <li>A piece may jump consecutively over an opponent's pieces to capture all of them at the same time.</li>
+        <li>Jumps are compulsory. As long as you have an opportunity to capture, you must take it no matter what.</li>
+
+        <li>If a piece can continue to jump once it has jumped, it must do so in the same turn.</li>
+
+        <li>If there is more than one alternative for capture, you may choose which one to take. It need not be the path that takes the most pieces.</li>
+
+        <li>If your piece reaches the last row on the opponent's side, it will be promoted into a king.</li>
+
+        <li>When a knight is kinged, the turn automatically ends, even if the king can continue to jump.</li>
+
+        <li>Kings can only move diagonally but any number of space at a time. They may move diagonally forward or backwards.</li>
+
+        <li>There is no limit to how many king pieces a player may have</li>
+
+        <li>The game is won when all the opponent's pieces are captured or (putting them into a position where they cannot move).</li>
+
+        <li>If an exact board position is repeated a third time, the game automatically ends in a draw.</li>
+
+        <li>If 50 moves have taken place (for both players) since the last capture or advancement of a regular checker, the game ends in a draw.</li>
+
+      </ol>
+
+      <p>More detail can be see <a href="https://github.com/chameleonTK/checkers">here</a> </p>
+
+  </div>
+
+
+  <div style="padding-bottom: 50px;"></div>
+
+  <script src="_dist/runtime.e7df24b5d39b2102df5c.js" defer></script>
+  <script src="_dist/polyfills.35a5ca1855eb057f016a.js" defer></script>
+  <script src="_dist/styles.c0e135bd545e964d112b.js" defer></script>
+  <script src="_dist/main.f93b12e963dd65b22637.js" defer></script>
+</body>
 </html>

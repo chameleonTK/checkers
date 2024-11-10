@@ -1,10 +1,10 @@
-import { Player } from "./Player";
+import { PlayableAgent } from "./Player";
 import { Tile } from "./Tile";
 
 export class Token {
     x: number;
     y: number;
-    owner: Player;
+    owner: PlayableAgent;
     king: boolean = false;
     selected: boolean = false;
     enabled: boolean = true;
@@ -16,7 +16,7 @@ export class Token {
         this.y = y;
     }
 
-    setOwner(owner: Player) {
+    setOwner(owner: PlayableAgent) {
         this.owner = owner;
     }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Input } from '@angular/core';
 import { Checker } from "../Checker";
-import { Player } from "../Player";
+import { PlayableAgent } from "../Player";
 import { Lang } from "../Lang";
 // import { Rules } from '../rules';
 
@@ -11,8 +11,8 @@ import { Lang } from "../Lang";
   styleUrls: ['./board-stat-component.component.css']
 })
 export class BoardStatComponentComponent implements OnInit {
-  @Input() player1: Player;
-  @Input() player2: Player;
+  @Input() player1: PlayableAgent;
+  @Input() player2: PlayableAgent;
   @Input() game: Checker;
 
 //   @Input() rules: Rules;
@@ -27,7 +27,7 @@ export class BoardStatComponentComponent implements OnInit {
     return this.lang.txt(key);
   }
 
-  getBackgroundColor(player: Player):string {
+  getBackgroundColor(player: PlayableAgent):string {
     if (player.active) {
       return player.color
     } else {
@@ -35,7 +35,7 @@ export class BoardStatComponentComponent implements OnInit {
     }
   }
 
-  getTextColor(player: Player):string {
+  getTextColor(player: PlayableAgent):string {
     if (player.active) {
       return "#fff";
     } else {

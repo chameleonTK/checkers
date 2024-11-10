@@ -1,5 +1,5 @@
 import {Board} from "./Board";
-import {Player} from "./Player";
+import {Player, PlayableAgent} from "./Player";
 import {Token} from "./Token";
 import {Move} from "./Move";
 import {Log} from "./Log";
@@ -7,16 +7,16 @@ import { PlayerRandomBot } from "./PlayerRandomBot";
 
 interface GameState {
     end: boolean;
-    winner: Player;
-    loser: Player;
+    winner: PlayableAgent;
+    loser: PlayableAgent;
     cause: string;
 }
 
 export class Checker {
     boardSize: number = 8;
     board: Board;
-    players: Player[];
-    activePlayer: Player;
+    players: PlayableAgent[];
+    activePlayer: PlayableAgent;
 
     selectedToken: Token = null;
 
