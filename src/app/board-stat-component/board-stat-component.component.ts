@@ -21,20 +21,6 @@ export class BoardStatComponentComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.player1, this.player2);
-
-//   //   Player.prototype.activate = function() {
-//   //     this.active = true;
-//   //     this.stat.css("background-color", this.color);
-//   //     this.stat.css("color", "#fff");
-//   // }
-  
-//   // Player.prototype.deactivate = function() {
-//   //     this.active = false;
-//   //     this.stat.css("background-color", "");
-//   //     this.stat.css("border-color", this.color);
-//   //     this.stat.css("color", this.color);
-//   // }
   }
 
   txt(key: string) {

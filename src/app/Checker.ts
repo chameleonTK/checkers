@@ -3,6 +3,7 @@ import {Player} from "./Player";
 import {Token} from "./Token";
 import {Move} from "./Move";
 import {Log} from "./Log";
+import { PlayerRandomBot } from "./PlayerRandomBot";
 
 interface GameState {
     end: boolean;
@@ -25,14 +26,19 @@ export class Checker {
 
     endgameCallback: Function = null;
     errorCallback: Function = null;
-    currentGameState: GameState = null;
+    currentGameState: GameState = {end: false, winner: null, loser: null, cause: ""};
 
 
     constructor() {
         this.board = new Board(this.boardSize, this.boardSize);
+        // this.players = [
+        //     new PlayerRandomBot(1, "Player 1", "#444444", true),
+        //     new Player(2, "Player 2", "#e26b6b", false)
+        // ];
+
         this.players = [
-            new Player(1, "Player 1", "#444444", true),
-            new Player(2, "Player 2", "#e26b6b", false)
+            new PlayerRandomBot(1, "Player 1", "#444444", true),
+            new PlayerRandomBot(2, "Player 2", "#e26b6b", false)
         ];
 
         this.activePlayer = this.players[0];
@@ -56,32 +62,42 @@ export class Checker {
                     this.players[1].addToken(token2);
                     this.board.addToken(token2)
                 }
-                console.log(tile);
             });
         });
 
         // let t = null;
         // t = new Token(2, 2);
+        // this.players[1].addToken(t);
+        // this.board.addToken(t)
+
+        // t = new Token(5, 5);
+        // this.players[1].addToken(t);
+        // this.board.addToken(t);
+
+        
+        // t = new Token(0, 0);
+        // this.players[1].addToken(t);
+        // this.board.addToken(t)
+
+        // // t = new Token(2, 4);
+        // // this.players[1].addToken(t);
+        // // this.board.addToken(t)
+
+        // t = new Token(1, 5);
+        // this.players[1].addToken(t);
+        // t.promote();
+        // this.board.addToken(t)
+
+        // t = new Token(3, 3);
+        // t.promote();
         // this.players[0].addToken(t);
         // this.board.addToken(t)
 
         // // t = new Token(5, 5);
-        // // this.players[0].addToken(t);
-        // // this.board.addToken(t)
-
-        // // t = new Token(2, 2);
         // // this.players[1].addToken(t);
         // // this.board.addToken(t)
 
-        // t = new Token(0, 0);
-        // this.players[1].addToken(t);
-        // this.board.addToken(t)
-        // t = new Token(1, 1);
-        // this.players[1].addToken(t);
-        // this.board.addToken(t)
-        // t = new Token(3, 3);
-        // this.players[1].addToken(t);
-        // this.board.addToken(t)
+        this.activePlayer.play(this);
     }
 
     setEndgameCallback(callback) {
@@ -128,6 +144,7 @@ export class Checker {
             if (!this.selectedToken.isKing()) {
                 this.selectedToken.promote();
                 promotedKnight = true;
+                tile.move.setPromotedKnight(true);
             }
         }
 
@@ -154,25 +171,29 @@ export class Checker {
             this.swapPlayer();
             this.selectedToken = null;
             this.board.unselect();   
+            this.board.enableTokens();
+
         } else if (!tile.move.isJump) {
             this.swapPlayer();
             this.selectedToken = null;
-            this.board.unselect();   
+            this.board.unselect(); 
+            this.board.enableTokens();  
         } else {
             // if this turn is a jump and check if there is a consecutive jump
-            let moveTiles:Move[] = this.selectedToken.owner.getNextMoves(this.selectedToken, this.board);
-            const jumpMoves = moveTiles.filter((m)=>m.isJump);
+            let moves:Move[] = this.selectedToken.owner.getNextMoves(this.selectedToken, this.board);
+            const jumpMoves = moves.filter((m)=>m.isJump);
 
             if (jumpMoves.length == 0) {
                 this.swapPlayer();
                 this.selectedToken = null;
                 this.board.unselect();   
+                this.board.enableTokens();
             } else {
                 this.noSwapPlayer();
                 this.board.unselect();
 
                 this.selectedToken.select();   
-                jumpMoves.forEach((m)=>{
+                moves.forEach((m)=>{
                     m.tile.select();
                     m.tile.setMove(m);
                 })
@@ -184,9 +205,6 @@ export class Checker {
 
                 
             }
-            
-            
-            
         }
         
 
@@ -230,22 +248,18 @@ export class Checker {
         const nextPlayerIdx = (playerIdx+1 >= this.players.length) ? 0 : playerIdx+1;
         this.players[nextPlayerIdx].active = true;
         this.activePlayer = this.players[nextPlayerIdx];
-        
 
-        this.turnIndex += 1;
-        this.currentGameState = this.checkGameState();
-        if (this.currentGameState.end) {
-            this.board.tokens.forEach((t)=>{
-                t.disable();
-            });
+        this.nextTurn();
 
-            if (!!this.endgameCallback) {
-                this.endgameCallback(this.currentGameState)
-            }
-        }
+        this.activePlayer.play(this);
     }
 
     noSwapPlayer() {
+        this.nextTurn();
+        this.activePlayer.play(this);
+    }
+
+    nextTurn() {
         this.turnIndex += 1;
         this.currentGameState = this.checkGameState();
         if (this.currentGameState.end) {
@@ -341,7 +355,7 @@ export class Checker {
     
 
     redo() {
-        this.logger.redo(this.board);
+        this.logger.redo(this);
     }
     
 

@@ -86,9 +86,13 @@ export class Board {
 
         this.tokens.forEach((t) => {
             t.unselect();
-            t.enable();
+            // t.enable();
         });
     }
 
-    
+    enableTokens() {
+        this.tokens.forEach((t) => {
+            t.enable();
+        });
+    }
 }

@@ -143,8 +143,11 @@ export class Player {
         
     }
     
-    getNextJumps(token): Tile[] {
-        return [];
+    play() {
+        console.log(`${this.name} is playing...`);
+        return;
     }
+
+
 
 }

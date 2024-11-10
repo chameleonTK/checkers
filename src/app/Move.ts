@@ -5,6 +5,7 @@ export class Move {
     token: Token;
     tile: Tile;
     isJump: Boolean = false;
+    promotedKnight: Boolean = false;
     capturingToken: Token = null;
 
     srcTile: Tile;
@@ -18,5 +19,9 @@ export class Move {
 
         this.srcTile = token.tile;
         this.destTile = tile;
+    }
+
+    setPromotedKnight(p) {
+        this.promotedKnight = p
     }
 }

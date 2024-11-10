@@ -24,6 +24,10 @@ export class Token {
         this.king = true;
     }
 
+    demote() {
+        this.king = false;
+    }
+
     isKnight() {
         return !this.king;
     }
